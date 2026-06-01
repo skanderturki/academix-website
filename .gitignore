@@ -27,5 +27,12 @@ yarn-error.log*
 
 .mcp.json
 /.ai-memory
-/aichat
 .claude/
+
+# Standalone / experimental sub-projects — not tracked by this repo.
+# academic_quality_generic has its own repo (academic-quality-universities);
+# the others are experimental and intentionally left out of version control.
+/academic_quality_generic
+/aichat
+/curriculum-modeler
+/student-advisor
