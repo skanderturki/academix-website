@@ -1,0 +1,96 @@
+# =============================================================================
+# Droplet A — 178.128.51.137  (lightweight: official sites + automation)
+# Hosts: jahiz.tn, academix.tn, n8n.academix.tn
+# =============================================================================
+#
+# Expected droplet layout (repos checked out as siblings; run compose from the
+# academix-website checkout where this file lives):
+#
+#   /opt/jahiz/
+#     academix-website/   <- THIS repo (this file); builds academix.tn
+#     jahiz_main/         <- sibling checkout; builds jahiz.tn
+#                            (NB: the dev-machine folder is "Jahiz website";
+#                             on the droplet it is the repo name `jahiz_main`)
+#
+#   cd /opt/jahiz/academix-website
+#   docker compose -f docker-compose.droplet-a.yml --env-file .env.droplet-a up -d --build
+#
+# - All app ports bind to 127.0.0.1 only. The droplet's SYSTEM nginx terminates
+#   TLS and reverse-proxies each hostname to the right loopback port. No
+#   in-compose nginx (system nginx is the single public entry point).
+# - Secrets use ${VAR:?…} so compose fails fast if they're missing from .env,
+#   instead of shipping insecure defaults.
+#
+# nginx → port map on this droplet:
+#   jahiz.tn          -> 127.0.0.1:3000
+#   academix.tn       -> 127.0.0.1:3001
+#   n8n.academix.tn   -> 127.0.0.1:5678
+# =============================================================================
+
+name: jahiz-droplet-a
+
+services:
+  # --- jahiz.tn — corporate marketing site (jahiz_main) ----------------------
+  # Dockerfile lives in the jahiz_main repo root (CRA build -> slim node serving
+  # build/ + /api/contact, mirroring academix). nginx vhost: deploy/nginx/jahiz.tn.conf.
+  jahiz:
+    build:
+      context: ../jahiz_main
+      dockerfile: Dockerfile
+    image: jahiz-site:latest
+    restart: always
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      RESEND_API_KEY: ${JAHIZ_RESEND_API_KEY:-}
+      RESEND_FROM: ${JAHIZ_RESEND_FROM:-Jahiz <noreply@jahiz.tn>}
+      CONTACT_TO_EMAIL: ${JAHIZ_CONTACT_TO_EMAIL:-contact@jahiz.tn}
+      # Optional preview gate — leave blank to keep the site fully public.
+      SITE_USERNAME: ${JAHIZ_SITE_USERNAME:-preview}
+      SITE_PASSWORD: ${JAHIZ_SITE_PASSWORD:-}
+    networks: [web]
+
+  # --- academix.tn — marketing site (this repo) ------------------------------
+  academix:
+    build:
+      context: .
+      dockerfile: dockerfile
+    image: academix-site:latest
+    restart: always
+    ports:
+      - "127.0.0.1:3001:3000"   # container listens on 3000; host 3001 avoids the jahiz clash
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      RESEND_API_KEY: ${MAIN_RESEND_API_KEY:-}
+      RESEND_FROM: ${MAIN_RESEND_FROM:-Academix <noreply@academix.tn>}
+      CONTACT_TO_EMAIL: ${MAIN_CONTACT_TO_EMAIL:-contact@academix.tn}
+      SITE_USERNAME: ${MAIN_SITE_USERNAME:-preview}
+      SITE_PASSWORD: ${MAIN_SITE_PASSWORD:-}
+    networks: [web]
+
+  # --- n8n.academix.tn — automation (stateful, embedded SQLite) --------------
+  n8n:
+    image: n8nio/n8n
+    restart: always
+    ports:
+      - "127.0.0.1:5678:5678"
+    environment:
+      N8N_HOST: n8n.academix.tn
+      N8N_PORT: "5678"
+      N8N_PROTOCOL: https
+      NODE_ENV: production
+      WEBHOOK_URL: https://n8n.academix.tn/
+      GENERIC_TIMEZONE: UTC
+    volumes:
+      - n8n_data:/home/node/.n8n
+    networks: [web]
+
+networks:
+  web:
+    driver: bridge
+
+volumes:
+  n8n_data:
