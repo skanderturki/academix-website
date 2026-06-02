@@ -1,44 +1,44 @@
 # =============================================================================
 # Droplet B — 165.232.175.224  (heavier: prototypes)
-# Hosts: pmp.academix.tn, quality.academix.tn, gallery.jahiz.tn, info.baximize.com
+# Adds pmp / quality / gallery + a shared Mongo ALONGSIDE the existing bacinfo
+# stack, behind bacinfo's **Caddy** (which already owns :80/:443 and does
+# automatic Let's Encrypt). No host ports, no certbot.
 # =============================================================================
 #
-# Expected droplet layout (run compose from the academix-website checkout):
+# Integration model:
+#   - bacinfo runs its own compose at /home/bacinfo/bacinfo (caddy + web +
+#     meilisearch) on docker network `bacinfo_app`.
+#   - These services join that network (declared `edge`, external) so Caddy can
+#     reverse_proxy to them BY NAME (pmp:3002, quality:5000, gallery:3001).
+#   - Add the matching site blocks to bacinfo's Caddyfile (see
+#     deploy/caddy/academix-apps.caddy), then reload Caddy.
+#   - Mongo is on a private `internal` network only — never reachable by Caddy
+#     or the host.
 #
-#   /opt/jahiz/
-#     academix-website/                 <- THIS repo (this file); builds PMP + gallery (embedded)
-#     academic-quality-universities/    <- sibling checkout; builds quality
-#     bacinfo/                          <- TBD (not yet relocated into d:/jahiz)
+# Layout on the droplet (run from the academix-website checkout):
+#   /opt/jahiz/academix-website/                   <- this repo + this file
+#   /opt/jahiz/academic-quality-universities/      <- sibling checkout (quality build)
 #
-#   cd /opt/jahiz/academix-website
-#   docker compose -f docker-compose.droplet-b.yml --env-file .env.droplet-b up -d --build
+#   # confirm the external network name first:
+#   docker network ls | grep app        # expect: bacinfo_app
+#   docker compose -f docker-compose.droplet-b.yml --env-file .env.droplet-b up -d
 #
-# - One shared MongoDB (mongo:7) serves BOTH Mongo apps via separate databases
-#   (pmp-learning, psu-quality). Mongo is NOT published to the host — it is only
-#   reachable over the internal compose network.
-# - gallery (nadart-evo) and n8n use SQLite, NOT Mongo — they don't touch this
-#   instance.
-# - App ports bind to 127.0.0.1; system nginx is the only public entry point.
-# - Secrets use ${VAR:?…} (fail fast if missing). Define them in .env.droplet-b.
-#
-# RAM note: local Mongo + node-canvas (quality) build + 3 Node apps is heavy for
-# a 2 GB box. Add swap, or build images off-box and `up -d` without --build.
-#
-# nginx → port map on this droplet:
-#   pmp.academix.tn      -> 127.0.0.1:3002
-#   gallery.jahiz.tn     -> 127.0.0.1:3001
-#   quality.academix.tn  -> 127.0.0.1:3003
-#   info.baximize.com    -> 127.0.0.1:3006  (bacinfo, once added)
+# Images come from GHCR (CI builds off-box). `build:` stays for local builds.
+# RAM: staying at 2 GB + swap — per-service `mem_limit`s below cap usage so one
+# container can't starve bacinfo. Add swap before `up -d`:
+#   fallocate -l 4G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile
+#   echo '/swapfile none swap sw 0 0' >> /etc/fstab
+# Only `quality` uses the local Mongo; PMP -> Atlas; gallery -> SQLite.
 # =============================================================================
 
 name: jahiz-droplet-b
 
 services:
-  # --- shared MongoDB (internal only) ----------------------------------------
+  # Local Mongo — serves ONLY quality (psu-quality). PMP stays on Atlas.
   mongo:
     image: mongo:7
     restart: always
-    # No host port — internal network only.
+    mem_limit: 512m
     volumes:
       - mongo-data:/data/db
     healthcheck:
@@ -47,39 +47,37 @@ services:
       timeout: 5s
       retries: 5
       start_period: 20s
-    networks: [proto]
+    networks: [internal]
 
-  # --- pmp.academix.tn — PMP Learning Platform -------------------------------
   pmp:
     build:
       context: ./PMP website
       dockerfile: Dockerfile
     image: ghcr.io/skanderturki/pmp-website:latest
     restart: always
-    ports:
-      - "127.0.0.1:3002:3002"
+    mem_limit: 320m
+    expose:
+      - "3002"
     environment:
       NODE_ENV: production
       PORT: "3002"
-      MONGODB_URI: mongodb://mongo:27017/pmp-learning
+      # PMP stays on MongoDB Atlas (external) — no local Mongo dependency.
+      MONGODB_URI: ${PMP_MONGODB_URI:?set PMP_MONGODB_URI (Atlas) in .env.droplet-b}
       JWT_SECRET: ${PMP_JWT_SECRET:?set PMP_JWT_SECRET in .env.droplet-b}
       CLIENT_URL: https://pmp.academix.tn
       RESEND_API_KEY: ${PMP_RESEND_API_KEY:-}
       RESEND_FROM: ${PMP_RESEND_FROM:-PMP Learn <noreply@academix.tn>}
-    depends_on:
-      mongo:
-        condition: service_healthy
-    networks: [proto]
+    networks: [edge]
 
-  # --- quality.academix.tn — Academic Quality Platform -----------------------
   quality:
     build:
       context: ../academic-quality-universities
       dockerfile: Dockerfile
     image: ghcr.io/skanderturki/academic-quality:latest
     restart: always
-    ports:
-      - "127.0.0.1:3003:5000"   # container listens on 5000
+    mem_limit: 640m
+    expose:
+      - "5000"
     environment:
       NODE_ENV: production
       PORT: "5000"
@@ -88,14 +86,12 @@ services:
       ADMIN_EMAIL: ${QUALITY_ADMIN_EMAIL:?set QUALITY_ADMIN_EMAIL in .env.droplet-b}
       ADMIN_PASSWORD: ${QUALITY_ADMIN_PASSWORD:?set QUALITY_ADMIN_PASSWORD in .env.droplet-b}
       CLIENT_URL: ${QUALITY_CLIENT_URL:-https://quality.academix.tn}
-      # Optional — SMTP (password-reset OTP, notifications). Blank disables.
       SMTP_HOST: ${QUALITY_SMTP_HOST:-}
       SMTP_PORT: ${QUALITY_SMTP_PORT:-587}
       SMTP_USER: ${QUALITY_SMTP_USER:-}
       SMTP_PASS: ${QUALITY_SMTP_PASS:-}
       SMTP_FROM: ${QUALITY_SMTP_FROM:-}
       SMTP_SECURE: ${QUALITY_SMTP_SECURE:-false}
-      # Optional — Gemini (curriculum import + AI summaries).
       GEMINI_API_KEY: ${QUALITY_GEMINI_API_KEY:-}
       BACKUP_DIR: /app/server/backups
     volumes:
@@ -103,9 +99,8 @@ services:
     depends_on:
       mongo:
         condition: service_healthy
-    networks: [proto]
+    networks: [internal, edge]
 
-  # --- gallery.jahiz.tn — nadart-evo (SQLite, not Mongo) ---------------------
   gallery:
     build:
       context: ./mygalery/nadart_evo
@@ -114,8 +109,9 @@ services:
         VITE_GOOGLE_CLIENT_ID: ${NADART_VITE_GOOGLE_CLIENT_ID:-}
     image: ghcr.io/skanderturki/nadart-evo:latest
     restart: always
-    ports:
-      - "127.0.0.1:3001:3001"
+    mem_limit: 320m
+    expose:
+      - "3001"
     environment:
       NODE_ENV: production
       PORT: "3001"
@@ -123,7 +119,7 @@ services:
       ADMIN_EMAIL: ${NADART_ADMIN_EMAIL:?set NADART_ADMIN_EMAIL in .env.droplet-b}
       ADMIN_PASSWORD: ${NADART_ADMIN_PASSWORD:?set NADART_ADMIN_PASSWORD in .env.droplet-b}
       GOOGLE_CLIENT_ID: ${NADART_GOOGLE_CLIENT_ID:-}
-      N8N_WEBHOOK_URL: https://n8n.academix.tn/webhook/contact   # n8n lives on Droplet A
+      N8N_WEBHOOK_URL: https://n8n.academix.tn/webhook/contact
       N8N_AUTH_USER: ${NADART_N8N_AUTH_USER:-nadart}
       N8N_AUTH_PASSWORD: ${NADART_N8N_AUTH_PASSWORD:-}
       MAX_FILE_SIZE: "10485760"
@@ -131,30 +127,18 @@ services:
     volumes:
       - ./mygalery/nadart_evo/data:/app/data
       - ./mygalery/nadart_evo/resources:/app/resources
-    networks: [proto]
+    networks: [edge]   # SQLite, no Mongo — only needs Caddy reachability
 
-  # --- info.baximize.com — bacinfo (TODO) ------------------------------------
-  # Not yet relocated into d:/jahiz (currently at
-  # C:\Users\skand\Desktop\informatque bac techno, live at info.baximize.com).
-  # Add once its repo + Dockerfile are in place. If it uses Mongo, point it at
-  # the shared instance: mongodb://mongo:27017/bacinfo
-  #
-  # bacinfo:
-  #   build:
-  #     context: ../bacinfo
-  #     dockerfile: Dockerfile
-  #   image: bacinfo:latest
-  #   restart: always
-  #   ports:
-  #     - "127.0.0.1:3006:3000"
-  #   environment:
-  #     NODE_ENV: production
-  #     # MONGODB_URI: mongodb://mongo:27017/bacinfo   # if Mongo-backed
-  #   # depends_on: { mongo: { condition: service_healthy } }   # if Mongo-backed
-  #   networks: [proto]
+  # bacinfo — already runs in its own compose (/home/bacinfo/bacinfo). Not here.
 
 networks:
-  proto:
+  # bacinfo's Caddy network — Caddy reverse_proxies to our services by name on it.
+  # Confirm the real name with `docker network ls | grep app` (compose project
+  # "bacinfo" + network "app" => bacinfo_app).
+  edge:
+    external: true
+    name: bacinfo_app
+  internal:
     driver: bridge
 
 volumes:

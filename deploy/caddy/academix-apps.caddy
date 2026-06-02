@@ -1,0 +1,12 @@
+# NOTE: the canonical Caddy site blocks for pmp / quality / gallery now live in
+# the bacinfo repo's Caddyfile (bacinfo/Caddyfile), since bacinfo's Caddy is the
+# shared reverse proxy on Droplet B. This file is kept only as a pointer.
+#
+# To apply a Caddyfile change on Droplet B:
+#   cd /home/bacinfo/bacinfo && git pull
+#   docker compose exec caddy caddy reload --config /etc/caddy/Caddyfile
+#   # (or: docker compose restart caddy)
+#
+# The app containers (pmp:3002, quality:5000, gallery:3001) come from
+# academix-website/docker-compose.droplet-b.yml and must be on the shared
+# `bacinfo_app` network for Caddy to resolve them by name.
