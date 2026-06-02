@@ -94,4 +94,8 @@ networks:
     driver: bridge
 
 volumes:
+  # Reuse the EXISTING n8n volume from the old skasystems-main compose so all
+  # workflows/credentials survive the cutover (confirmed live volume name).
   n8n_data:
+    external: true
+    name: skasystems-main_n8n_data
