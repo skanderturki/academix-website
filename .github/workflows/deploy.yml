@@ -1,0 +1,166 @@
+# Builds the three images this monorepo produces, pushes to GHCR, and deploys
+# each to its droplet. Path filters mean only the app you changed rebuilds.
+#
+#   academix-site -> Droplet A (compose-a, service `academix`)
+#   pmp-website   -> Droplet B (compose-b, service `pmp`)
+#   nadart-evo    -> Droplet B (compose-b, service `gallery`)
+#
+# Required repo secrets:
+#   DROPLET_A_HOST, DROPLET_B_HOST   178.128.51.137 / 165.232.175.224
+#   DROPLET_SSH_USER, DROPLET_SSH_KEY
+#   DEPLOY_DIR                       academix-website checkout path on each droplet
+#                                    (assumed identical, e.g. /opt/jahiz/academix-website)
+#   GHCR_PULL_TOKEN                  PAT (read:packages) for the droplet to pull
+#   NADART_VITE_GOOGLE_CLIENT_ID     gallery build-arg (baked into the client bundle)
+
+name: deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      build_all:
+        description: 'Build & deploy all three apps regardless of changes'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      academix: ${{ steps.f.outputs.academix }}
+      pmp: ${{ steps.f.outputs.pmp }}
+      gallery: ${{ steps.f.outputs.gallery }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: f
+        with:
+          filters: |
+            academix:
+              - 'src/**'
+              - 'public/**'
+              - 'server.js'
+              - 'package*.json'
+              - 'dockerfile'
+              - 'tailwind.config.js'
+              - 'postcss.config.js'
+            pmp:
+              - 'PMP website/**'
+            gallery:
+              - 'mygalery/nadart_evo/**'
+
+  academix:
+    needs: changes
+    if: ${{ needs.changes.outputs.academix == 'true' || inputs.build_all }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with: { registry: ghcr.io, username: '${{ github.actor }}', password: '${{ secrets.GITHUB_TOKEN }}' }
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: dockerfile
+          push: true
+          tags: ghcr.io/skanderturki/academix-site:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Deploy to Droplet A
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DROPLET_A_HOST }}
+          username: ${{ secrets.DROPLET_SSH_USER }}
+          key: ${{ secrets.DROPLET_SSH_KEY }}
+          envs: GHCR_TOKEN,GHCR_USER,DEPLOY_DIR
+          script: |
+            set -e
+            echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+            cd "$DEPLOY_DIR"
+            docker compose -f docker-compose.droplet-a.yml --env-file .env.droplet-a pull academix
+            docker compose -f docker-compose.droplet-a.yml --env-file .env.droplet-a up -d academix
+            docker image prune -f
+        env:
+          GHCR_TOKEN: ${{ secrets.GHCR_PULL_TOKEN }}
+          GHCR_USER: ${{ github.actor }}
+          DEPLOY_DIR: ${{ secrets.DEPLOY_DIR }}
+
+  pmp:
+    needs: changes
+    if: ${{ needs.changes.outputs.pmp == 'true' || inputs.build_all }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with: { registry: ghcr.io, username: '${{ github.actor }}', password: '${{ secrets.GITHUB_TOKEN }}' }
+      - uses: docker/build-push-action@v6
+        with:
+          context: PMP website
+          file: PMP website/Dockerfile
+          push: true
+          tags: ghcr.io/skanderturki/pmp-website:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Deploy to Droplet B
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DROPLET_B_HOST }}
+          username: ${{ secrets.DROPLET_SSH_USER }}
+          key: ${{ secrets.DROPLET_SSH_KEY }}
+          envs: GHCR_TOKEN,GHCR_USER,DEPLOY_DIR
+          script: |
+            set -e
+            echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+            cd "$DEPLOY_DIR"
+            docker compose -f docker-compose.droplet-b.yml --env-file .env.droplet-b pull pmp
+            docker compose -f docker-compose.droplet-b.yml --env-file .env.droplet-b up -d pmp
+            docker image prune -f
+        env:
+          GHCR_TOKEN: ${{ secrets.GHCR_PULL_TOKEN }}
+          GHCR_USER: ${{ github.actor }}
+          DEPLOY_DIR: ${{ secrets.DEPLOY_DIR }}
+
+  gallery:
+    needs: changes
+    if: ${{ needs.changes.outputs.gallery == 'true' || inputs.build_all }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with: { registry: ghcr.io, username: '${{ github.actor }}', password: '${{ secrets.GITHUB_TOKEN }}' }
+      - uses: docker/build-push-action@v6
+        with:
+          context: mygalery/nadart_evo
+          file: mygalery/nadart_evo/Dockerfile
+          push: true
+          tags: ghcr.io/skanderturki/nadart-evo:latest
+          build-args: |
+            VITE_GOOGLE_CLIENT_ID=${{ secrets.NADART_VITE_GOOGLE_CLIENT_ID }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Deploy to Droplet B
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DROPLET_B_HOST }}
+          username: ${{ secrets.DROPLET_SSH_USER }}
+          key: ${{ secrets.DROPLET_SSH_KEY }}
+          envs: GHCR_TOKEN,GHCR_USER,DEPLOY_DIR
+          script: |
+            set -e
+            echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+            cd "$DEPLOY_DIR"
+            docker compose -f docker-compose.droplet-b.yml --env-file .env.droplet-b pull gallery
+            docker compose -f docker-compose.droplet-b.yml --env-file .env.droplet-b up -d gallery
+            docker image prune -f
+        env:
+          GHCR_TOKEN: ${{ secrets.GHCR_PULL_TOKEN }}
+          GHCR_USER: ${{ github.actor }}
+          DEPLOY_DIR: ${{ secrets.DEPLOY_DIR }}

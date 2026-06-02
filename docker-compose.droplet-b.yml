@@ -54,7 +54,7 @@ services:
     build:
       context: ./PMP website
       dockerfile: Dockerfile
-    image: pmp-website:latest
+    image: ghcr.io/skanderturki/pmp-website:latest
     restart: always
     ports:
       - "127.0.0.1:3002:3002"
@@ -76,7 +76,7 @@ services:
     build:
       context: ../academic-quality-universities
       dockerfile: Dockerfile
-    image: academic-quality:latest
+    image: ghcr.io/skanderturki/academic-quality:latest
     restart: always
     ports:
       - "127.0.0.1:3003:5000"   # container listens on 5000
@@ -112,7 +112,7 @@ services:
       dockerfile: Dockerfile
       args:
         VITE_GOOGLE_CLIENT_ID: ${NADART_VITE_GOOGLE_CLIENT_ID:-}
-    image: nadart-evo:latest
+    image: ghcr.io/skanderturki/nadart-evo:latest
     restart: always
     ports:
       - "127.0.0.1:3001:3001"

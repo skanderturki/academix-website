@@ -3,5 +3,18 @@ build
 .git
 .gitignore
 README.md
+.github
+scripts
+deploy
+.env
+.env.droplet-a
+.env.droplet-b
+# embedded sibling apps build via their own contexts, not the academix image
+PMP website
+mygalery
+academic_quality_generic
+aichat
+curriculum-modeler
+student-advisor
 # Don't ignore public directory
 !public/ 

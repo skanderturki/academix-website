@@ -37,7 +37,8 @@ services:
     build:
       context: ../jahiz_main
       dockerfile: Dockerfile
-    image: jahiz-site:latest
+    # CI builds & pushes this tag to GHCR; the droplet `pull`s it (no on-box build).
+    image: ghcr.io/skanderturki/jahiz-site:latest
     restart: always
     ports:
       - "127.0.0.1:3000:3000"
@@ -57,7 +58,7 @@ services:
     build:
       context: .
       dockerfile: dockerfile
-    image: academix-site:latest
+    image: ghcr.io/skanderturki/academix-site:latest
     restart: always
     ports:
       - "127.0.0.1:3001:3000"   # container listens on 3000; host 3001 avoids the jahiz clash
