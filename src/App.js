@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Menu, X, GraduationCap, Workflow, Bot, Mail } from 'lucide-react';
+import { Menu, X, GraduationCap, Workflow, Bot, Mail, Languages } from 'lucide-react';
 import Home from './components/Home';
 import Login from './components/Login';
 import Register from './components/Register';
 import Portfolio from './components/Portfolio';
 import { useAuth } from './contexts/AuthContext';
+import { useLanguage } from './contexts/LanguageContext';
 import { cn } from './lib/utils';
 
 function BrandLogo({ className }) {
@@ -18,14 +19,12 @@ function BrandLogo({ className }) {
   );
 }
 
-const FEATURE_CHIPS = [
-  { label: 'Quality & Accreditation', Icon: GraduationCap },
-  { label: 'Process Automation', Icon: Workflow },
-  { label: 'AI for Academia', Icon: Bot },
-];
+// Positional — index-aligned with content.featureChips.
+const FEATURE_CHIP_ICONS = [GraduationCap, Workflow, Bot];
 
 function App() {
   const { isAuthenticated, logout } = useAuth();
+  const { t, lang, toggleLang } = useLanguage();
   const [currentView, setCurrentView] = useState('home');
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -56,16 +55,29 @@ function App() {
   };
 
   const navLinks = [
-    { href: '#home', label: 'Home' },
-    { href: '#about', label: 'About' },
-    { href: '#services', label: 'Services' },
-    { href: '#contact', label: 'Contact' },
-    {
-      href: 'https://pmp.academix.tn',
-      label: 'PMP Platform',
-      external: true,
-    },
+    { href: '#home', label: t.nav.home },
+    { href: '#about', label: t.nav.about },
+    { href: '#services', label: t.nav.services },
+    { href: '#contact', label: t.nav.contact },
+    { href: 'https://pmp.academix.tn', label: t.nav.pmp, external: true },
   ];
+
+  const LangToggle = ({ className }) => (
+    <button
+      type="button"
+      onClick={toggleLang}
+      aria-label={t.nav.switchLabel}
+      className={cn(
+        'inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-sm font-medium text-white/85 transition hover:bg-white/10 hover:border-white/30',
+        className
+      )}
+    >
+      <Languages className="h-4 w-4 text-brand-steel" />
+      <span className="tabular-nums uppercase tracking-wider">{lang}</span>
+      <span className="text-white/40">/</span>
+      <span>{t.nav.switchTo}</span>
+    </button>
+  );
 
   return (
     <div className="dark min-h-screen flex flex-col bg-background text-foreground">
@@ -108,22 +120,25 @@ function App() {
                     Academix
                   </h1>
                   <p className="text-xs sm:text-sm text-white/80 mt-1">
-                    University Software Solutions <span className="text-white/40">|</span> Quality Assurance
+                    {t.banner.line1} <span className="text-white/40">|</span> {t.banner.line2}
                   </p>
                 </div>
               </div>
 
               {/* Feature chips */}
               <div className="hidden md:flex flex-wrap gap-2">
-                {FEATURE_CHIPS.map(({ label, Icon }) => (
-                  <div
-                    key={label}
-                    className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 backdrop-blur px-3 py-1.5 text-xs font-medium text-white/90 transition hover:bg-white/20 hover:border-white/30 hover:-translate-y-0.5"
-                  >
-                    <Icon className="h-3.5 w-3.5 text-brand-steel" />
-                    <span>{label}</span>
-                  </div>
-                ))}
+                {t.featureChips.map((label, i) => {
+                  const Icon = FEATURE_CHIP_ICONS[i] || GraduationCap;
+                  return (
+                    <div
+                      key={label}
+                      className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 backdrop-blur px-3 py-1.5 text-xs font-medium text-white/90 transition hover:bg-white/20 hover:border-white/30 hover:-translate-y-0.5"
+                    >
+                      <Icon className="h-3.5 w-3.5 text-brand-steel" />
+                      <span>{label}</span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -154,29 +169,33 @@ function App() {
                     rel="noopener noreferrer"
                     className="rounded-full px-4 py-2 text-sm font-medium text-white/80 transition hover:text-white hover:bg-white/10"
                   >
-                    n8n Server
+                    {t.nav.n8n}
                   </a>
                   <button
                     type="button"
                     onClick={handleLogout}
                     className="rounded-full px-4 py-2 text-sm font-medium text-white/80 transition hover:text-white hover:bg-white/10"
                   >
-                    Logout
+                    {t.nav.logout}
                   </button>
                 </>
               )}
             </div>
 
-            {/* Mobile toggle */}
-            <button
-              type="button"
-              aria-label="Toggle navigation menu"
-              aria-expanded={mobileOpen}
-              className="lg:hidden inline-flex h-10 w-10 items-center justify-center rounded-full text-white/90 hover:bg-white/10 transition"
-              onClick={() => setMobileOpen((v) => !v)}
-            >
-              {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </button>
+            {/* Right side: language toggle + mobile toggle */}
+            <div className="flex items-center gap-2 lg:ml-auto">
+              <LangToggle className="hidden sm:inline-flex" />
+
+              <button
+                type="button"
+                aria-label="Toggle navigation menu"
+                aria-expanded={mobileOpen}
+                className="lg:hidden inline-flex h-10 w-10 items-center justify-center rounded-full text-white/90 hover:bg-white/10 transition"
+                onClick={() => setMobileOpen((v) => !v)}
+              >
+                {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </button>
+            </div>
           </div>
 
           {/* Mobile nav drawer */}
@@ -208,17 +227,20 @@ function App() {
                     onClick={() => setMobileOpen(false)}
                     className="rounded-lg px-4 py-3 text-sm font-medium text-white/90 hover:bg-white/10"
                   >
-                    n8n Server
+                    {t.nav.n8n}
                   </a>
                   <button
                     type="button"
                     onClick={handleLogout}
                     className="text-left rounded-lg px-4 py-3 text-sm font-medium text-white/90 hover:bg-white/10"
                   >
-                    Logout
+                    {t.nav.logout}
                   </button>
                 </>
               )}
+              <div className="px-4 py-3">
+                <LangToggle />
+              </div>
             </div>
           </div>
         </nav>
@@ -249,15 +271,14 @@ function App() {
                 <span className="font-bold text-white text-lg">Academix</span>
               </div>
               <p className="text-sm text-white/60 leading-relaxed max-w-sm">
-                University software solutions and quality assurance — accreditation
-                evidence, learning outcome assessment, and academic process automation.
+                {t.footer.blurb}
               </p>
             </div>
 
             {/* Platforms col */}
             <div>
               <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
-                Platforms
+                {t.footer.platformsHeading}
               </h3>
               <ul className="space-y-2 text-sm">
                 <li>
@@ -267,7 +288,7 @@ function App() {
                     rel="noopener noreferrer"
                     className="text-white/70 hover:text-brand-steel transition"
                   >
-                    PMP Platform
+                    {t.footer.links.pmp}
                   </a>
                 </li>
                 <li>
@@ -277,12 +298,12 @@ function App() {
                     rel="noopener noreferrer"
                     className="text-white/70 hover:text-brand-steel transition"
                   >
-                    n8n Server
+                    {t.footer.links.n8n}
                   </a>
                 </li>
                 <li>
                   <a href="#services" className="text-white/70 hover:text-brand-steel transition">
-                    All Services
+                    {t.footer.links.allServices}
                   </a>
                 </li>
               </ul>
@@ -291,7 +312,7 @@ function App() {
             {/* Contact col */}
             <div>
               <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
-                Get in Touch
+                {t.footer.getInTouch}
               </h3>
               <ul className="space-y-2 text-sm">
                 <li>
@@ -305,7 +326,7 @@ function App() {
                 </li>
                 <li>
                   <a href="#contact" className="text-white/70 hover:text-brand-steel transition">
-                    Contact form
+                    {t.footer.links.contactForm}
                   </a>
                 </li>
               </ul>
@@ -313,8 +334,8 @@ function App() {
           </div>
 
           <div className="mt-10 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/50">
-            <p>© {new Date().getFullYear()} Academix — University Software Solutions for Quality Assurance</p>
-            <p className="font-mono">Built with care for universities.</p>
+            <p>© {new Date().getFullYear()} {t.footer.rights}</p>
+            <p className="font-mono">{t.footer.built}</p>
           </div>
         </div>
       </footer>

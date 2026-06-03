@@ -5,18 +5,15 @@ import { Textarea } from './ui/textarea';
 import { Label } from './ui/label';
 import { Button } from './ui/button';
 import { Alert, AlertDescription } from './ui/alert';
+import { useLanguage } from '../contexts/LanguageContext';
 import { cn } from '../lib/utils';
-
-const SERVICE_TYPES = [
-  'University Quality / Accreditation Platform',
-  'Academic Process Automation (n8n)',
-  'AI-Powered Academic Tools',
-  'Other / Not sure yet',
-];
 
 const CONTACT_EMAIL = 'contact@academix.tn';
 
 function ContactForm() {
+  const { t } = useLanguage();
+  const f = t.contact.form;
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -35,12 +32,12 @@ function ContactForm() {
   };
 
   const validate = () => {
-    if (!formData.name.trim()) return 'Please enter your name';
-    if (!formData.email.trim()) return 'Please enter your email';
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) return 'Please enter a valid email';
-    if (!formData.serviceType) return 'Please select a service type';
+    if (!formData.name.trim()) return f.errors.name;
+    if (!formData.email.trim()) return f.errors.email;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) return f.errors.emailInvalid;
+    if (!formData.serviceType) return f.errors.serviceType;
     if (!formData.message.trim() || formData.message.trim().length < 20) {
-      return 'Please provide a more detailed message (at least 20 characters)';
+      return f.errors.message;
     }
     return '';
   };
@@ -73,7 +70,7 @@ function ContactForm() {
       setSuccess(true);
       setFormData({ name: '', email: '', organization: '', serviceType: '', message: '' });
     } catch (err) {
-      setError(err.message || 'Could not send your message. Please try emailing us directly.');
+      setError(err.message || f.errors.generic);
     } finally {
       setLoading(false);
     }
@@ -95,9 +92,9 @@ function ContactForm() {
 
       <div className="relative rounded-2xl border border-white/10 bg-card/60 backdrop-blur-xl p-6 sm:p-8 shadow-2xl">
         <div className="mb-6">
-          <h3 className="text-2xl font-semibold text-white">Send Us a Message</h3>
+          <h3 className="text-2xl font-semibold text-white">{f.heading}</h3>
           <p className="text-sm text-white/60 mt-1">
-            Or reach us directly at{' '}
+            {f.directIntro}{' '}
             <a
               href={`mailto:${CONTACT_EMAIL}`}
               className="inline-flex items-center gap-1 text-brand-steel hover:text-brand-glow transition"
@@ -118,7 +115,7 @@ function ContactForm() {
           <Alert variant="success" className="mb-5">
             <CheckCircle2 className="h-4 w-4" />
             <AlertDescription>
-              <strong>Thanks!</strong> Your message has been sent. We'll get back to you soon.
+              <strong>{f.successTitle}</strong> {f.success}
             </AlertDescription>
           </Alert>
         )}
@@ -127,13 +124,13 @@ function ContactForm() {
           <div className="grid gap-5 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="formName" className="text-white/90">
-                Name <span className="text-red-400">*</span>
+                {f.name} <span className="text-red-400">*</span>
               </Label>
               <Input
                 id="formName"
                 type="text"
                 name="name"
-                placeholder="Your full name"
+                placeholder={f.namePlaceholder}
                 value={formData.name}
                 onChange={handleChange}
                 required
@@ -143,13 +140,13 @@ function ContactForm() {
 
             <div className="space-y-2">
               <Label htmlFor="formEmail" className="text-white/90">
-                Email <span className="text-red-400">*</span>
+                {f.email} <span className="text-red-400">*</span>
               </Label>
               <Input
                 id="formEmail"
                 type="email"
                 name="email"
-                placeholder="you@example.com"
+                placeholder={f.emailPlaceholder}
                 value={formData.email}
                 onChange={handleChange}
                 required
@@ -160,13 +157,13 @@ function ContactForm() {
 
           <div className="space-y-2">
             <Label htmlFor="formOrganization" className="text-white/90">
-              Organization
+              {f.organization}
             </Label>
             <Input
               id="formOrganization"
               type="text"
               name="organization"
-              placeholder="University, company or team (optional)"
+              placeholder={f.organizationPlaceholder}
               value={formData.organization}
               onChange={handleChange}
               className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
@@ -175,7 +172,7 @@ function ContactForm() {
 
           <div className="space-y-2">
             <Label htmlFor="formServiceType" className="text-white/90">
-              Service of Interest <span className="text-red-400">*</span>
+              {f.serviceType} <span className="text-red-400">*</span>
             </Label>
             <select
               id="formServiceType"
@@ -187,9 +184,9 @@ function ContactForm() {
               style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
             >
               <option value="" className="bg-brand-deep text-white/70">
-                Select a service
+                {f.serviceSelect}
               </option>
-              {SERVICE_TYPES.map((type) => (
+              {f.serviceOptions.map((type) => (
                 <option key={type} value={type} className="bg-brand-deep text-white">
                   {type}
                 </option>
@@ -199,20 +196,20 @@ function ContactForm() {
 
           <div className="space-y-2">
             <Label htmlFor="formMessage" className="text-white/90">
-              Message <span className="text-red-400">*</span>
+              {f.message} <span className="text-red-400">*</span>
             </Label>
             <Textarea
               id="formMessage"
               name="message"
               rows={6}
-              placeholder="Tell us about your project, goals, timeline, and anything else we should know..."
+              placeholder={f.messagePlaceholder}
               value={formData.message}
               onChange={handleChange}
               required
               minLength={20}
               className="bg-white/5 border-white/10 text-white placeholder:text-white/40 min-h-[140px]"
             />
-            <p className="text-xs text-white/40">Minimum 20 characters.</p>
+            <p className="text-xs text-white/40">{f.minChars}</p>
           </div>
 
           <Button
@@ -225,12 +222,12 @@ function ContactForm() {
             {loading ? (
               <>
                 <span className="h-2 w-2 animate-ping rounded-full bg-white" />
-                Sending...
+                {f.sending}
               </>
             ) : (
               <>
                 <Send className="h-4 w-4" />
-                Send Message
+                {f.send}
               </>
             )}
           </Button>

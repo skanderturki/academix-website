@@ -165,6 +165,26 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Geo lookup — returns the 2-letter country of the visitor's IP, used by the
+// client to pick a default language (French for TN/FR, English otherwise).
+// Resolves server-side via geojs.io (no API key, no bundled GeoIP DB). The
+// client IP comes from X-Forwarded-For via `trust proxy` above.
+app.get('/api/geo', async (req, res) => {
+  const ip = String(req.ip || '').replace(/^::ffff:/, '');
+  try {
+    const r = await fetch(
+      `https://get.geojs.io/v1/ip/country/${encodeURIComponent(ip)}.json`,
+      { signal: AbortSignal.timeout(2500) }
+    );
+    const data = await r.json();
+    const country = data && data.country ? String(data.country).toUpperCase() : null;
+    res.set('Cache-Control', 'public, max-age=86400');
+    return res.json({ country });
+  } catch {
+    return res.json({ country: null });
+  }
+});
+
 // Serve the CRA build
 const buildPath = path.join(__dirname, 'build');
 app.use(express.static(buildPath));
