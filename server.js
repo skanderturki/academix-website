@@ -254,9 +254,10 @@ app.get('/api/stats', (req, res) => {
   res.json({
     since,
     totals: q("SELECT type, COUNT(*) n FROM events WHERE ts>=? GROUP BY type"),
+    byDay: q("SELECT substr(ts,1,10) d, type, COUNT(*) n FROM events WHERE ts>=? GROUP BY d, type ORDER BY d"),
     topPages: q("SELECT path, COUNT(*) n FROM events WHERE type='pageview' AND ts>=? GROUP BY path ORDER BY n DESC LIMIT 25"),
     byCountry: q("SELECT country, COUNT(*) n FROM events WHERE type='pageview' AND ts>=? GROUP BY country ORDER BY n DESC LIMIT 25"),
-    byLang: q("SELECT lang, COUNT(*) n FROM events WHERE type='pageview' AND ts>=? GROUP BY lang"),
+    byLang: q("SELECT lang, COUNT(*) n FROM events WHERE type='pageview' AND ts>=? GROUP BY lang ORDER BY n DESC"),
     topClicks: q("SELECT target, COUNT(*) n FROM events WHERE type='click' AND ts>=? GROUP BY target ORDER BY n DESC LIMIT 25"),
   });
 });
