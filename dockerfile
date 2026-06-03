@@ -30,8 +30,12 @@ COPY --from=build /app/build ./build
 COPY --from=build /app/server.js ./server.js
 COPY --from=build /app/package.json /app/package-lock.json ./
 
-# Install production dependencies only
-RUN npm install --omit=dev --legacy-peer-deps --no-audit --no-fund \
+# Install production dependencies only. better-sqlite3 is native: compile it
+# with throwaway build tools (removed after), keeping only libstdc++ at runtime.
+RUN apk add --no-cache libstdc++ \
+    && apk add --no-cache --virtual .build-deps python3 make g++ \
+    && npm install --omit=dev --legacy-peer-deps --no-audit --no-fund \
+    && apk del .build-deps \
     && npm cache clean --force
 
 ENV NODE_ENV=production

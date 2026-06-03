@@ -12,6 +12,9 @@
 # production
 /build
 
+# Local analytics SQLite DB (dev). Production lives on a Docker volume.
+/data
+
 # misc
 .DS_Store
 .env

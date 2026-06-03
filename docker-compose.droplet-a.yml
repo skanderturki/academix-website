@@ -51,6 +51,11 @@ services:
       # Optional preview gate — leave blank to keep the site fully public.
       SITE_USERNAME: ${JAHIZ_SITE_USERNAME:-preview}
       SITE_PASSWORD: ${JAHIZ_SITE_PASSWORD:-}
+      # First-party analytics (embedded SQLite on the volume below).
+      ANALYTICS_DB: /app/data/analytics.db
+      ANALYTICS_TOKEN: ${JAHIZ_ANALYTICS_TOKEN:-}
+    volumes:
+      - jahiz-analytics:/app/data
     networks: [web]
 
   # --- academix.tn — marketing site (this repo) ------------------------------
@@ -70,6 +75,11 @@ services:
       CONTACT_TO_EMAIL: ${MAIN_CONTACT_TO_EMAIL:-contact@academix.tn}
       SITE_USERNAME: ${MAIN_SITE_USERNAME:-preview}
       SITE_PASSWORD: ${MAIN_SITE_PASSWORD:-}
+      # First-party analytics (embedded SQLite on the volume below).
+      ANALYTICS_DB: /app/data/analytics.db
+      ANALYTICS_TOKEN: ${MAIN_ANALYTICS_TOKEN:-}
+    volumes:
+      - academix-analytics:/app/data
     networks: [web]
 
   # --- n8n.academix.tn — automation (stateful, embedded SQLite) --------------
@@ -99,3 +109,7 @@ volumes:
   n8n_data:
     external: true
     name: skasystems-main_n8n_data
+  # jahiz.tn analytics SQLite DB (pageviews + clicks).
+  jahiz-analytics:
+  # academix.tn analytics SQLite DB (pageviews + clicks).
+  academix-analytics:

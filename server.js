@@ -1,8 +1,37 @@
 const path = require('path');
+const fs = require('fs');
 const crypto = require('crypto');
 const express = require('express');
 const rateLimit = require('express-rate-limit');
+const Database = require('better-sqlite3');
 const { Resend } = require('resend');
+
+// ---------------------------------------------------------------------------
+// First-party analytics — embedded SQLite. Pageviews + clicks are written to a
+// local DB (persisted via a Docker volume in production). No third party.
+// ---------------------------------------------------------------------------
+const ANALYTICS_DB = process.env.ANALYTICS_DB || path.join(__dirname, 'data', 'analytics.db');
+const ANALYTICS_TOKEN = process.env.ANALYTICS_TOKEN || '';
+fs.mkdirSync(path.dirname(ANALYTICS_DB), { recursive: true });
+const db = new Database(ANALYTICS_DB);
+db.pragma('journal_mode = WAL');
+db.exec(`CREATE TABLE IF NOT EXISTS events (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  ts TEXT NOT NULL,
+  type TEXT NOT NULL,
+  path TEXT,
+  lang TEXT,
+  country TEXT,
+  target TEXT,
+  label TEXT,
+  referrer TEXT,
+  ua TEXT
+)`);
+db.exec('CREATE INDEX IF NOT EXISTS idx_events_ts ON events(ts)');
+const insertEvent = db.prepare(
+  `INSERT INTO events (ts,type,path,lang,country,target,label,referrer,ua)
+   VALUES (@ts,@type,@path,@lang,@country,@target,@label,@referrer,@ua)`
+);
 
 const PORT = parseInt(process.env.PORT, 10) || 3000;
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
@@ -183,6 +212,53 @@ app.get('/api/geo', async (req, res) => {
   } catch {
     return res.json({ country: null });
   }
+});
+
+// Analytics ingest — records a pageview or click. Rate-limited; returns 204.
+const trackLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 400,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.post('/api/track', trackLimiter, (req, res) => {
+  try {
+    const b = req.body || {};
+    const type = String(b.type || '');
+    if (type === 'pageview' || type === 'click') {
+      insertEvent.run({
+        ts: new Date().toISOString(),
+        type,
+        path: b.path ? String(b.path).slice(0, 512) : null,
+        lang: b.lang ? String(b.lang).slice(0, 8) : null,
+        country: b.country ? String(b.country).slice(0, 4) : null,
+        target: b.target ? String(b.target).slice(0, 512) : null,
+        label: b.label ? String(b.label).slice(0, 160) : null,
+        referrer: b.ref ? String(b.ref).slice(0, 512) : null,
+        ua: String(req.headers['user-agent'] || '').slice(0, 256),
+      });
+    }
+  } catch {
+    /* never fail a tracking call */
+  }
+  res.status(204).end();
+});
+
+// Analytics readout — simple aggregates. Gated by ANALYTICS_TOKEN (?token=).
+app.get('/api/stats', (req, res) => {
+  if (!ANALYTICS_TOKEN || req.query.token !== ANALYTICS_TOKEN) {
+    return res.status(403).json({ error: 'forbidden' });
+  }
+  const since = String(req.query.since || '1970-01-01');
+  const q = (sql) => db.prepare(sql).all(since);
+  res.json({
+    since,
+    totals: q("SELECT type, COUNT(*) n FROM events WHERE ts>=? GROUP BY type"),
+    topPages: q("SELECT path, COUNT(*) n FROM events WHERE type='pageview' AND ts>=? GROUP BY path ORDER BY n DESC LIMIT 25"),
+    byCountry: q("SELECT country, COUNT(*) n FROM events WHERE type='pageview' AND ts>=? GROUP BY country ORDER BY n DESC LIMIT 25"),
+    byLang: q("SELECT lang, COUNT(*) n FROM events WHERE type='pageview' AND ts>=? GROUP BY lang"),
+    topClicks: q("SELECT target, COUNT(*) n FROM events WHERE type='click' AND ts>=? GROUP BY target ORDER BY n DESC LIMIT 25"),
+  });
 });
 
 // Serve the CRA build
