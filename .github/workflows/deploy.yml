@@ -73,6 +73,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
       - name: Deploy to Droplet A
+        if: ${{ vars.AUTO_DEPLOY == 'true' }}
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.DROPLET_A_HOST }}
@@ -109,6 +110,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
       - name: Deploy to Droplet B
+        if: ${{ vars.AUTO_DEPLOY == 'true' }}
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.DROPLET_B_HOST }}
@@ -147,6 +149,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
       - name: Deploy to Droplet B
+        if: ${{ vars.AUTO_DEPLOY == 'true' }}
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.DROPLET_B_HOST }}
