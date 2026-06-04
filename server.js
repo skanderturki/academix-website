@@ -25,13 +25,86 @@ db.exec(`CREATE TABLE IF NOT EXISTS events (
   target TEXT,
   label TEXT,
   referrer TEXT,
-  ua TEXT
+  ua TEXT,
+  utm_source TEXT,
+  utm_medium TEXT,
+  utm_campaign TEXT,
+  visitor TEXT,
+  session TEXT,
+  is_new INTEGER,
+  device TEXT,
+  browser TEXT,
+  os TEXT,
+  scroll INTEGER,
+  dwell INTEGER
 )`);
+// Migrate pre-existing DBs: add any columns introduced after the first deploy.
+{
+  const have = new Set(db.prepare('PRAGMA table_info(events)').all().map((c) => c.name));
+  const cols = [
+    ['utm_source', 'TEXT'], ['utm_medium', 'TEXT'], ['utm_campaign', 'TEXT'],
+    ['visitor', 'TEXT'], ['session', 'TEXT'], ['is_new', 'INTEGER'],
+    ['device', 'TEXT'], ['browser', 'TEXT'], ['os', 'TEXT'],
+    ['scroll', 'INTEGER'], ['dwell', 'INTEGER'],
+  ];
+  for (const [col, t] of cols) if (!have.has(col)) db.exec(`ALTER TABLE events ADD COLUMN ${col} ${t}`);
+}
 db.exec('CREATE INDEX IF NOT EXISTS idx_events_ts ON events(ts)');
+db.exec('CREATE INDEX IF NOT EXISTS idx_events_session ON events(session)');
+db.exec('CREATE INDEX IF NOT EXISTS idx_events_visitor ON events(visitor)');
+
 const insertEvent = db.prepare(
-  `INSERT INTO events (ts,type,path,lang,country,target,label,referrer,ua)
-   VALUES (@ts,@type,@path,@lang,@country,@target,@label,@referrer,@ua)`
+  `INSERT INTO events
+     (ts,type,path,lang,country,target,label,referrer,ua,
+      utm_source,utm_medium,utm_campaign,visitor,session,is_new,
+      device,browser,os,scroll,dwell)
+   VALUES
+     (@ts,@type,@path,@lang,@country,@target,@label,@referrer,@ua,
+      @utm_source,@utm_medium,@utm_campaign,@visitor,@session,@is_new,
+      @device,@browser,@os,@scroll,@dwell)`
 );
+
+// Coarse device / browser / OS from the user-agent. Best-effort; unknowns
+// bucket as 'Other' / 'Unknown'. Keeps us from storing/parsing raw UA anywhere
+// downstream.
+function parseUA(ua) {
+  ua = String(ua || '');
+  const device = /Mobi|iPhone|iPod|Android.*Mobile/i.test(ua)
+    ? 'Mobile'
+    : /iPad|Tablet|Android/i.test(ua)
+      ? 'Tablet'
+      : ua ? 'Desktop' : 'Unknown';
+  let browser = 'Other';
+  if (/Edg\//i.test(ua)) browser = 'Edge';
+  else if (/OPR\/|Opera/i.test(ua)) browser = 'Opera';
+  else if (/Chrome\//i.test(ua) && !/Chromium/i.test(ua)) browser = 'Chrome';
+  else if (/Firefox\//i.test(ua)) browser = 'Firefox';
+  else if (/Version\/.*Safari/i.test(ua)) browser = 'Safari';
+  else if (/MSIE|Trident/i.test(ua)) browser = 'IE';
+  let os = 'Other';
+  if (/Windows NT/i.test(ua)) os = 'Windows';
+  else if (/iPhone|iPad|iPod/i.test(ua)) os = 'iOS';
+  else if (/Mac OS X/i.test(ua)) os = 'macOS';
+  else if (/Android/i.test(ua)) os = 'Android';
+  else if (/Linux/i.test(ua)) os = 'Linux';
+  return { device, browser, os };
+}
+
+// Insert with sane defaults so callers only pass what they have.
+function recordEvent(e) {
+  insertEvent.run(
+    Object.assign(
+      {
+        ts: new Date().toISOString(), type: 'pageview',
+        path: null, lang: null, country: null, target: null, label: null,
+        referrer: null, ua: null, utm_source: null, utm_medium: null,
+        utm_campaign: null, visitor: null, session: null, is_new: 0,
+        device: null, browser: null, os: null, scroll: null, dwell: null,
+      },
+      e
+    )
+  );
+}
 
 const PORT = parseInt(process.env.PORT, 10) || 3000;
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
@@ -182,6 +255,18 @@ app.post('/api/contact', contactLimiter, async (req, res) => {
     }
 
     console.log(`[Resend] Contact email sent (id=${data?.id}) from ${email}`);
+    // Record the lead as a conversion (server-side = 1 conversion per real email).
+    try {
+      recordEvent({
+        type: 'conversion',
+        target: 'contact_form',
+        label: String(serviceType || '').slice(0, 160),
+        referrer: req.headers.referer ? String(req.headers.referer).slice(0, 512) : null,
+        ua: String(req.headers['user-agent'] || '').slice(0, 256),
+      });
+    } catch {
+      /* analytics must never break a successful submission */
+    }
     return res.json({ success: true });
   } catch (err) {
     console.error('[Resend] Unexpected error sending contact email:', err);
@@ -214,10 +299,10 @@ app.get('/api/geo', async (req, res) => {
   }
 });
 
-// Analytics ingest — records a pageview or click. Rate-limited; returns 204.
+// Analytics ingest — pageview / click / conversion / engagement. 204, rate-limited.
 const trackLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 400,
+  max: 600,
   standardHeaders: true,
   legacyHeaders: false,
 });
@@ -225,17 +310,32 @@ app.post('/api/track', trackLimiter, (req, res) => {
   try {
     const b = req.body || {};
     const type = String(b.type || '');
-    if (type === 'pageview' || type === 'click') {
-      insertEvent.run({
-        ts: new Date().toISOString(),
+    if (['pageview', 'click', 'conversion', 'engagement'].includes(type)) {
+      const ua = String(req.headers['user-agent'] || '').slice(0, 256);
+      const { device, browser, os } = parseUA(ua);
+      const str = (v, n) => (v == null || v === '' ? null : String(v).slice(0, n));
+      const int = (v, lo, hi) =>
+        Number.isFinite(v) ? Math.max(lo, Math.min(hi, Math.round(v))) : null;
+      recordEvent({
         type,
-        path: b.path ? String(b.path).slice(0, 512) : null,
-        lang: b.lang ? String(b.lang).slice(0, 8) : null,
-        country: b.country ? String(b.country).slice(0, 4) : null,
-        target: b.target ? String(b.target).slice(0, 512) : null,
-        label: b.label ? String(b.label).slice(0, 160) : null,
-        referrer: b.ref ? String(b.ref).slice(0, 512) : null,
-        ua: String(req.headers['user-agent'] || '').slice(0, 256),
+        path: str(b.path, 512),
+        lang: str(b.lang, 8),
+        country: str(b.country, 4),
+        target: str(b.target, 512),
+        label: str(b.label, 160),
+        referrer: str(b.ref, 512),
+        ua,
+        utm_source: str(b.utm_source, 80),
+        utm_medium: str(b.utm_medium, 80),
+        utm_campaign: str(b.utm_campaign, 120),
+        visitor: str(b.vid, 64),
+        session: str(b.sid, 64),
+        is_new: b.new ? 1 : 0,
+        device,
+        browser,
+        os,
+        scroll: int(b.scroll, 0, 100),
+        dwell: int(b.dwell, 0, 86400),
       });
     }
   } catch {
@@ -244,22 +344,93 @@ app.post('/api/track', trackLimiter, (req, res) => {
   res.status(204).end();
 });
 
-// Analytics readout — simple aggregates. Gated by ANALYTICS_TOKEN (?token=).
+// Classify a referrer URL into an acquisition channel. Internal/self referrers
+// and no-referrer both count as Direct.
+const SELF_HOST_RE = /(^|\.)(jahiz\.tn|academix\.tn)$/i;
+function channelOf(ref) {
+  if (!ref) return 'Direct';
+  let host;
+  try { host = new URL(ref).hostname.replace(/^www\./, ''); } catch { return 'Other'; }
+  if (SELF_HOST_RE.test(host)) return 'Direct';
+  if (/(google|bing|duckduckgo|yahoo|baidu|yandex|ecosia)\./i.test(host)) return 'Search';
+  if (/(linkedin|facebook|fb\.com|instagram|t\.co|twitter|x\.com|youtube|reddit|pinterest|tiktok)\./i.test(host)) return 'Social';
+  return 'Referral';
+}
+
+// Aggregate the local events DB since an ISO date.
+function computeStats(since) {
+  const all = (sql) => db.prepare(sql).all(since);
+  const one = (sql) => db.prepare(sql).get(since) || {};
+
+  const totals = all("SELECT type, COUNT(*) n FROM events WHERE ts>=? GROUP BY type");
+  const pageviews = one("SELECT COUNT(*) n FROM events WHERE type='pageview' AND ts>=?").n || 0;
+  const aud = one(`SELECT
+      COUNT(DISTINCT visitor) visitors,
+      COUNT(DISTINCT session) sessions,
+      COUNT(DISTINCT CASE WHEN is_new=1 THEN visitor END) newVisitors
+    FROM events WHERE ts>=? AND visitor IS NOT NULL`);
+  const bounced = one(`SELECT COUNT(*) n FROM (
+      SELECT session FROM events WHERE type='pageview' AND session IS NOT NULL AND ts>=?
+      GROUP BY session HAVING COUNT(*)=1)`).n || 0;
+  const eng = one("SELECT AVG(scroll) s, AVG(dwell) d FROM events WHERE type='engagement' AND scroll IS NOT NULL AND ts>=?");
+  const conversions = (totals.find((t) => t.type === 'conversion') || {}).n || 0;
+  const visitors = aud.visitors || 0;
+  const sessions = aud.sessions || 0;
+
+  const refRows = all("SELECT referrer, COUNT(*) n FROM events WHERE type='pageview' AND ts>=? GROUP BY referrer");
+  const channelMap = {};
+  const hostMap = {};
+  for (const r of refRows) {
+    const c = channelOf(r.referrer);
+    channelMap[c] = (channelMap[c] || 0) + r.n;
+    if (r.referrer) {
+      let h;
+      try { h = new URL(r.referrer).hostname.replace(/^www\./, ''); } catch { h = null; }
+      if (h && !SELF_HOST_RE.test(h)) hostMap[h] = (hostMap[h] || 0) + r.n;
+    }
+  }
+  const byChannel = Object.entries(channelMap).map(([channel, n]) => ({ channel, n })).sort((a, b) => b.n - a.n);
+  const topReferrers = Object.entries(hostMap).map(([referrer, n]) => ({ referrer, n })).sort((a, b) => b.n - a.n).slice(0, 25);
+
+  return {
+    since,
+    totals,
+    byDay: all("SELECT substr(ts,1,10) d, type, COUNT(*) n FROM events WHERE ts>=? GROUP BY d, type ORDER BY d"),
+    audience: {
+      visitors, sessions, pageviews,
+      newVisitors: aud.newVisitors || 0,
+      returningVisitors: Math.max(0, visitors - (aud.newVisitors || 0)),
+      bounceRate: sessions ? Math.round((bounced / sessions) * 100) : 0,
+      pagesPerSession: sessions ? +(pageviews / sessions).toFixed(2) : 0,
+      avgScroll: eng.s != null ? Math.round(eng.s) : null,
+      avgDwell: eng.d != null ? Math.round(eng.d) : null,
+      conversions,
+      conversionRate: visitors ? +((conversions / visitors) * 100).toFixed(1) : 0,
+    },
+    topPages: all("SELECT path, COUNT(*) n FROM events WHERE type='pageview' AND ts>=? GROUP BY path ORDER BY n DESC LIMIT 25"),
+    landingPages: all(`SELECT path, COUNT(*) n FROM events e
+      WHERE type='pageview' AND session IS NOT NULL AND ts>=?
+        AND ts=(SELECT MIN(ts) FROM events WHERE session=e.session AND type='pageview')
+      GROUP BY path ORDER BY n DESC LIMIT 25`),
+    topClicks: all("SELECT target, COUNT(*) n FROM events WHERE type='click' AND ts>=? GROUP BY target ORDER BY n DESC LIMIT 25"),
+    byCountry: all("SELECT country, COUNT(*) n FROM events WHERE type='pageview' AND ts>=? GROUP BY country ORDER BY n DESC LIMIT 25"),
+    byLang: all("SELECT lang, COUNT(*) n FROM events WHERE type='pageview' AND ts>=? GROUP BY lang ORDER BY n DESC"),
+    byChannel,
+    topReferrers,
+    byCampaign: all("SELECT utm_campaign, utm_source, COUNT(*) n FROM events WHERE type='pageview' AND utm_source IS NOT NULL AND ts>=? GROUP BY utm_campaign, utm_source ORDER BY n DESC LIMIT 25"),
+    byDevice: all("SELECT device, COUNT(*) n FROM events WHERE type='pageview' AND ts>=? GROUP BY device ORDER BY n DESC"),
+    byBrowser: all("SELECT browser, COUNT(*) n FROM events WHERE type='pageview' AND ts>=? GROUP BY browser ORDER BY n DESC"),
+    byOS: all("SELECT os, COUNT(*) n FROM events WHERE type='pageview' AND ts>=? GROUP BY os ORDER BY n DESC"),
+    conversionsByService: all("SELECT label, COUNT(*) n FROM events WHERE type='conversion' AND ts>=? GROUP BY label ORDER BY n DESC LIMIT 25"),
+  };
+}
+
+// Analytics readout — aggregates gated by ANALYTICS_TOKEN (?token=).
 app.get('/api/stats', (req, res) => {
   if (!ANALYTICS_TOKEN || req.query.token !== ANALYTICS_TOKEN) {
     return res.status(403).json({ error: 'forbidden' });
   }
-  const since = String(req.query.since || '1970-01-01');
-  const q = (sql) => db.prepare(sql).all(since);
-  res.json({
-    since,
-    totals: q("SELECT type, COUNT(*) n FROM events WHERE ts>=? GROUP BY type"),
-    byDay: q("SELECT substr(ts,1,10) d, type, COUNT(*) n FROM events WHERE ts>=? GROUP BY d, type ORDER BY d"),
-    topPages: q("SELECT path, COUNT(*) n FROM events WHERE type='pageview' AND ts>=? GROUP BY path ORDER BY n DESC LIMIT 25"),
-    byCountry: q("SELECT country, COUNT(*) n FROM events WHERE type='pageview' AND ts>=? GROUP BY country ORDER BY n DESC LIMIT 25"),
-    byLang: q("SELECT lang, COUNT(*) n FROM events WHERE type='pageview' AND ts>=? GROUP BY lang ORDER BY n DESC"),
-    topClicks: q("SELECT target, COUNT(*) n FROM events WHERE type='click' AND ts>=? GROUP BY target ORDER BY n DESC LIMIT 25"),
-  });
+  res.json(computeStats(String(req.query.since || '1970-01-01')));
 });
 
 // Serve the CRA build
