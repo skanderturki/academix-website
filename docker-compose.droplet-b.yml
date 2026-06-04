@@ -66,7 +66,7 @@ services:
       JWT_SECRET: ${PMP_JWT_SECRET:?set PMP_JWT_SECRET in .env.droplet-b}
       CLIENT_URL: https://pmp.academix.tn
       RESEND_API_KEY: ${PMP_RESEND_API_KEY:-}
-      RESEND_FROM: ${PMP_RESEND_FROM:-PMP Learn <noreply@academix.tn>}
+      RESEND_FROM: ${PMP_RESEND_FROM:-PMP Learn <pmp@jahiz.tn>}
     networks: [edge]
 
   quality:

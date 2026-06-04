@@ -12,7 +12,7 @@ services:
       - NODE_ENV=production
       - PORT=3000
       - RESEND_API_KEY=${PMP_RESEND_API_KEY:-}
-      - RESEND_FROM=${MAIN_RESEND_FROM:-Academix <noreply@academix.tn>}
+      - RESEND_FROM=${MAIN_RESEND_FROM:-Academix <academix@jahiz.tn>}
       - CONTACT_TO_EMAIL=${MAIN_CONTACT_TO_EMAIL:-contact@academix.tn}
       # Optional preview password gate. Leave MAIN_SITE_PASSWORD empty to
       # disable. Set it to require HTTP Basic Auth on the main site.
@@ -79,7 +79,7 @@ services:
       - JWT_SECRET=${PMP_JWT_SECRET:-pmp-jwt-secret-change-in-production}
       - CLIENT_URL=https://pmp.academix.tn
       - RESEND_API_KEY=${PMP_RESEND_API_KEY:-}
-      - RESEND_FROM=${PMP_RESEND_FROM:-PMP Learn <noreply@academix.tn>}
+      - RESEND_FROM=${PMP_RESEND_FROM:-PMP Learn <pmp@jahiz.tn>}
     networks:
       - app-network
 
