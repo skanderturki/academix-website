@@ -1,10 +1,10 @@
 # Build stage — full dev install, runs the CRA production build
-FROM node:20-alpine AS build
+FROM node:20-slim AS build
 
 WORKDIR /app
 
-# Native build tools — some transitive devDependencies may compile gyp modules
-RUN apk add --no-cache python3 make g++
+# On glibc (Debian) better-sqlite3 installs a prebuilt binary, so no compiler
+# toolchain is needed (the Alpine/musl image had to compile it from source).
 
 # Install all deps (incl. devDependencies) using the lockfile for reproducibility
 COPY package*.json ./
@@ -21,7 +21,7 @@ RUN npm run build
 # server only needs the packages declared in `dependencies` that are
 # actually imported by server.js: express, express-rate-limit, resend.
 # ---------------------------------------------------------------------------
-FROM node:20-alpine
+FROM node:20-slim
 
 WORKDIR /app
 
@@ -30,12 +30,9 @@ COPY --from=build /app/build ./build
 COPY --from=build /app/server.js ./server.js
 COPY --from=build /app/package.json /app/package-lock.json ./
 
-# Install production dependencies only. better-sqlite3 is native: compile it
-# with throwaway build tools (removed after), keeping only libstdc++ at runtime.
-RUN apk add --no-cache libstdc++ \
-    && apk add --no-cache --virtual .build-deps python3 make g++ \
-    && npm install --omit=dev --legacy-peer-deps --no-audit --no-fund \
-    && apk del .build-deps \
+# Install production dependencies only. better-sqlite3 installs its prebuilt
+# glibc binary here, so there's no native compile and no build toolchain.
+RUN npm install --omit=dev --legacy-peer-deps --no-audit --no-fund \
     && npm cache clean --force
 
 ENV NODE_ENV=production
