@@ -71,7 +71,7 @@ const serve = async (deps) => {
   const sent = [];
   mountQuote(app, {
     resend: { emails: { send: async (m) => { sent.push(m); return { data: { id: '1' } }; } } },
-    from: 'Academix <academix@jahiz.tn>', teamEmail: 'contact@jahiz.tn',
+    from: 'Academix <contact@jahiz.tn>', teamEmail: 'contact@jahiz.tn',
     limiter: (_q, _s, n) => n(), recordEvent: () => {}, intakeSecret: SECRET, intakeUrl: 'http://platform', ...deps,
   });
   const server = app.listen(0);

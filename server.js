@@ -108,7 +108,7 @@ function recordEvent(e) {
 
 const PORT = parseInt(process.env.PORT, 10) || 3000;
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const RESEND_FROM = process.env.RESEND_FROM || 'Academix <academix@jahiz.tn>';
+const RESEND_FROM = process.env.RESEND_FROM || 'Academix <contact@jahiz.tn>';
 const CONTACT_TO_EMAIL = process.env.CONTACT_TO_EMAIL || 'contact@jahiz.tn';
 
 // Optional preview password gate. When SITE_PASSWORD is empty, the gate is a
