@@ -17,6 +17,13 @@ test('leads with the ABET platform and a demo request', () => {
   expect(screen.getByText(/Program Criteria, word for word/i)).toBeInTheDocument();
 });
 
+test('the product tour shows real screens with alt text', () => {
+  render(<LanguageProvider><App /></LanguageProvider>);
+  expect(screen.getAllByRole('tab').length).toBeGreaterThanOrEqual(3);
+  const img = screen.getByAltText(/ABET Readiness Center/i);
+  expect(img).toHaveAttribute('src', '/screens/readiness.webp');
+});
+
 test('makes no NCAAA claim and has no sign-in pages', () => {
   const { container } = render(<LanguageProvider><App /></LanguageProvider>);
   expect(container.textContent).not.toMatch(/NCAAA/);

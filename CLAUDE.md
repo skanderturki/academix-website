@@ -39,6 +39,8 @@ Create React App boilerplate and can be ignored.) See the workspace-root
 |------|------|
 | `src/App.js` | Header (mesh banner + sticky nav), footer, hash-based view routing |
 | `src/components/Home.js` | Hero / Platform (7 capabilities) / How it works (4 steps) / Services (automation, AI) / Why / Contact |
+| `public/screens/*.webp`, `scripts/capture-product-screens.js` | Product-tour screenshots (the "See it" section): taken from a LOCAL abet_quality seeded with the fictional AllTech demo program, never a customer tenant; the script header has the full recipe |
+| `public/brand/`, `public/favicon.svg`, `public/logo-192.png`, `public/banner.jpg` | The official Academix shield (from abet_quality's brand SVGs), and the 1200×630 social image |
 | `src/components/ContactForm.js` | Resend-backed contact form (name/email/org/serviceType/message) |
 | `src/components/QuoteRequest.js` | `#quote`: "Request a quote" for an Academix licence (nav "Pricing", hero secondary button) |
 | `quote.js` | `POST /api/quote`: validates, relays the request signed to the platform's control plane, emails the customer a confirmation; `tests/quote.test.js` (`npm run test:server`) |

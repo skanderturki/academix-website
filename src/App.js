@@ -7,7 +7,7 @@ import { initAnalytics } from './lib/analytics';
 import { cn } from './lib/utils';
 
 function BrandLogo({ className }) {
-  return <img src="/logo-192.png" alt="Academix" className={className} draggable={false} />;
+  return <img src="/brand/academix-shield-reversed.svg" alt="" width="88" height="100" className={className} draggable={false} />;
 }
 
 // LinkedIn glyph (lucide dropped brand marks, so it's inlined).
@@ -78,7 +78,7 @@ function App() {
         <div className="container-page flex h-[74px] items-center justify-between gap-6">
           {/* Brand */}
           <a href="#home" className="flex items-center gap-3 no-underline">
-            <BrandLogo className="h-9 w-auto object-contain" />
+            <BrandLogo className="h-9 w-auto" />
             <span className="font-serif text-[24px] tracking-[.3px] text-white">Academix</span>
           </a>
 
@@ -165,7 +165,7 @@ function App() {
         <div className="container-page grid grid-cols-1 gap-10 pb-10 pt-[54px] md:grid-cols-[1.6fr_1fr_1fr]">
           <div>
             <div className="mb-4 flex items-center gap-3">
-              <BrandLogo className="h-9 w-auto object-contain" />
+              <BrandLogo className="h-9 w-auto" />
               <span className="font-serif text-[22px] text-white">Academix</span>
             </div>
             <p className="max-w-[340px] text-[14px] leading-[1.6] text-[#8293af]">{t.footer.blurb}</p>

@@ -49,6 +49,17 @@ export const content = {
         { n: '.docx', l: 'Self-Study Report export' },
       ],
     },
+    tour: {
+      eyebrow: 'See it',
+      title: 'The platform, as',
+      titleHighlight: 'your team sees it',
+      note: 'Screens from a demo program with fictional data.',
+      items: [
+        { key: 'readiness', tab: 'Readiness', caption: 'The ABET Readiness Center: overall completeness, and what is still outstanding in each criterion, with a link to where it is fixed.', alt: 'ABET Readiness Center showing 92% readiness, 36 of 39 checks, and the outstanding items for Criteria 3 and 4 and the evidence binder' },
+        { key: 'so-summary', tab: 'Student Outcomes', caption: 'Attainment of each Student Outcome, as the share of students meeting expectations, against the program’s target.', alt: 'Student Outcome achievement summary: mean attainment 70%, a bar chart of SO1 to SO7 against a 70% target, and summary figures' },
+        { key: 'self-study', tab: 'Self-Study Report', caption: 'Every section of the Self-Study Report in one place, from Background to the appendices, exported as a Word document.', alt: 'Self-Study Report page listing 47 narrative sections by criterion, all authored, with an Export Self-Study Report (.docx) button' },
+      ],
+    },
     platform: {
       eyebrow: 'The platform',
       title: 'One place for the whole',
@@ -291,6 +302,17 @@ export const content = {
         { n: '8', l: 'critères ABET structurés' },
         { n: '65', l: 'disciplines (Program Criteria)' },
         { n: '.docx', l: 'export du Self-Study Report' },
+      ],
+    },
+    tour: {
+      eyebrow: 'Aperçu',
+      title: 'La plateforme, telle que',
+      titleHighlight: 'votre équipe la voit',
+      note: 'Écrans d’un programme de démonstration aux données fictives.',
+      items: [
+        { key: 'readiness', tab: 'Préparation', caption: 'Le centre de préparation ABET : complétude globale et éléments restant à traiter pour chaque critère, avec un lien vers la page où les corriger.', alt: 'Centre de préparation ABET : 92 % de préparation, 36 contrôles sur 39, et les éléments restants des critères 3 et 4 et du dossier de preuves' },
+        { key: 'so-summary', tab: 'Student Outcomes', caption: 'L’atteinte de chaque Student Outcome, en part d’étudiants au niveau attendu, face à la cible du programme.', alt: 'Synthèse des Student Outcomes : atteinte moyenne de 70 %, histogramme de SO1 à SO7 face à une cible de 70 %, et indicateurs clés' },
+        { key: 'self-study', tab: 'Self-Study Report', caption: 'Toutes les sections du Self-Study Report réunies, du Background aux annexes, exportées en document Word.', alt: 'Page du Self-Study Report listant 47 sections rédigées par critère, avec un bouton d’export du Self-Study Report (.docx)' },
       ],
     },
     platform: {

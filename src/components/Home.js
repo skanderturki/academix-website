@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Check, ChevronRight, Mail } from 'lucide-react';
 import OutcomeMap from './OutcomeMap';
@@ -123,6 +124,71 @@ function Hero() {
         </div>
       </div>
     </header>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Product tour: real screens from a demo program (fictional data)            */
+/* -------------------------------------------------------------------------- */
+
+function Tour() {
+  const { t } = useLanguage();
+  const [active, setActive] = useState(0);
+  const item = t.tour.items[active];
+  return (
+    <section id="tour" className="section-anchor relative border-t border-white/[.06]">
+      <div className="container-page py-20 md:py-24">
+        <div className="mb-8 flex flex-wrap items-end justify-between gap-6">
+          <div>
+            <Eyebrow>{t.tour.eyebrow}</Eyebrow>
+            <h2 className="font-serif text-[34px] font-normal leading-[1.1] text-[#fbfcfe] sm:text-[42px]">
+              {t.tour.title} <span className="text-[#e9b872]">{t.tour.titleHighlight}</span>
+            </h2>
+          </div>
+          <div role="tablist" aria-label={t.tour.eyebrow} className="flex flex-wrap gap-1 rounded-[11px] border border-white/[.12] p-1">
+            {t.tour.items.map((it, i) => (
+              <button
+                key={it.key}
+                type="button"
+                role="tab"
+                id={`tour-tab-${it.key}`}
+                aria-selected={i === active}
+                aria-controls="tour-panel"
+                onClick={() => setActive(i)}
+                className={
+                  'rounded-[8px] px-4 py-2 text-[14px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e9b872]/60 ' +
+                  (i === active ? 'bg-[#e9b872] text-[#0a1628]' : 'text-[#aebbd2] hover:text-white')
+                }
+              >
+                {it.tab}
+              </button>
+            ))}
+          </div>
+        </div>
+        <figure id="tour-panel" role="tabpanel" aria-labelledby={`tour-tab-${item.key}`} className="m-0">
+          <div className="overflow-hidden rounded-[16px] border border-white/[.12] bg-[#f4f4f0] shadow-[0_30px_80px_rgba(0,0,0,.45)]">
+            <img
+              key={item.key}
+              src={`/screens/${item.key}.webp`}
+              alt={item.alt}
+              width="1440"
+              height="900"
+              loading="lazy"
+              decoding="async"
+              className="block h-auto w-full"
+            />
+          </div>
+          <figcaption className="mt-5 flex flex-wrap items-baseline justify-between gap-3">
+            <span className="max-w-[720px] text-[16px] leading-[1.6] text-[#b3c0d8]">{item.caption}</span>
+            <span className="font-mono text-[11.5px] text-[#6f7f9b]">{t.tour.note}</span>
+          </figcaption>
+        </figure>
+        {/* Preload the other screens once the first is on show. */}
+        <div hidden>
+          {t.tour.items.filter((_, i) => i !== active).map((it) => <link key={it.key} rel="prefetch" href={`/screens/${it.key}.webp`} />)}
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -341,6 +407,7 @@ function Home() {
   return (
     <>
       <Hero />
+      <Tour />
       <Platform />
       <HowItWorks />
       <Services />
