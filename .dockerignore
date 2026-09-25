@@ -6,6 +6,8 @@ data
 README.md
 .github
 scripts
+# ...except the static page generator, which `npm run build` runs
+!scripts/pages
 deploy
 .env
 .env.droplet-a

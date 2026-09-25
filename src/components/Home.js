@@ -363,6 +363,40 @@ function WhyChoose() {
 }
 
 /* -------------------------------------------------------------------------- */
+/*  Questions (the full list is the static /faq page)                          */
+/* -------------------------------------------------------------------------- */
+
+function Questions() {
+  const { t, lang } = useLanguage();
+  return (
+    <section id="faq" className="section-anchor relative border-t border-white/[.06]">
+      <div className="container-page grid gap-12 py-20 md:py-24 lg:grid-cols-[.7fr_1.3fr]">
+        <div>
+          <Eyebrow>{t.faq.eyebrow}</Eyebrow>
+          <h2 className="mb-6 font-serif text-[34px] font-normal leading-[1.1] text-[#fbfcfe] sm:text-[42px]">
+            {t.faq.title} <span className="text-[#e9b872]">{t.faq.titleHighlight}</span>
+          </h2>
+          <a href={lang === 'fr' ? '/fr/faq' : '/faq'} className="inline-flex items-center gap-1.5 text-[15px] font-semibold text-[#e9b872] no-underline hover:underline">
+            {t.faq.more} <ArrowRight size={15} />
+          </a>
+        </div>
+        <div className="divide-y divide-white/[.08] border-y border-white/[.08]">
+          {t.faq.items.map(([q, a]) => (
+            <details key={q} className="group py-5">
+              <summary className="flex cursor-pointer list-none items-start justify-between gap-6 text-[17px] font-semibold text-[#fbfcfe] [&::-webkit-details-marker]:hidden">
+                <h3 className="text-[17px] font-semibold">{q}</h3>
+                <ChevronRight size={18} className="mt-1 flex-none text-[#e9b872] transition-transform group-open:rotate-90" />
+              </summary>
+              <p className="mt-3 text-[15.5px] leading-[1.7] text-[#a9b7d0]">{a}</p>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
 /*  Contact                                                                    */
 /* -------------------------------------------------------------------------- */
 
@@ -412,6 +446,7 @@ function Home() {
       <HowItWorks />
       <Services />
       <WhyChoose />
+      <Questions />
       <ContactSection />
     </>
   );

@@ -25,10 +25,28 @@ function getStoredLang() {
   }
 }
 
+// /fr (and /fr/...) is the French site; its address decides the language.
+function pathLang() {
+  if (typeof window === 'undefined') return null;
+  return /^\/fr(\/|$)/.test(window.location.pathname) ? 'fr' : null;
+}
+
+// Keep the address in step with the language, so a shared link opens in it.
+function syncPath(next) {
+  try {
+    const hash = window.location.hash || '';
+    const onFr = /^\/fr(\/|$)/.test(window.location.pathname);
+    if (next === 'fr' && !onFr) window.history.replaceState(null, '', '/fr' + hash);
+    if (next === 'en' && onFr) window.history.replaceState(null, '', '/' + hash);
+  } catch {
+    /* ignore */
+  }
+}
+
 export function LanguageProvider({ children }) {
   // Start from an explicit choice if there is one, else English. Country-based
   // auto-detection (below) refines this on first visit.
-  const [lang, setLangState] = useState(() => getStoredLang() || DEFAULT_LANG);
+  const [lang, setLangState] = useState(() => pathLang() || getStoredLang() || DEFAULT_LANG);
 
   useEffect(() => {
     document.documentElement.lang = lang;
@@ -38,7 +56,7 @@ export function LanguageProvider({ children }) {
   // user has explicitly picked a language. The detected value is NOT persisted,
   // so it re-evaluates each visit until the user toggles.
   useEffect(() => {
-    if (getStoredLang()) return;
+    if (pathLang() || getStoredLang()) return;
 
     let cancelled = false;
     (async () => {
@@ -72,6 +90,7 @@ export function LanguageProvider({ children }) {
   const setLang = useCallback((next) => {
     if (!SUPPORTED.includes(next)) return;
     setLangState(next);
+    syncPath(next);
     try {
       window.localStorage.setItem(STORAGE_KEY, next);
     } catch {
@@ -82,6 +101,7 @@ export function LanguageProvider({ children }) {
   const toggleLang = useCallback(() => {
     setLangState((prev) => {
       const next = prev === 'en' ? 'fr' : 'en';
+      syncPath(next);
       try {
         window.localStorage.setItem(STORAGE_KEY, next);
       } catch {

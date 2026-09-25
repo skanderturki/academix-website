@@ -46,11 +46,14 @@ function App() {
 
 
   // Sections live on the home page; '#quote' is its own view.
+  // Content pages are separate static pages, in each language (/fr/...).
+  const L = (p) => (lang === 'fr' ? `/fr${p}` : p);
   const navLinks = [
     { href: '#platform', label: t.nav.platform },
-    { href: '#how', label: t.nav.how },
-    { href: '#services', label: t.nav.services },
-    { href: '#quote', label: t.nav.quote },
+    { href: L('/what-is-abet-accreditation'), label: t.nav.guide },
+    { href: L('/program-criteria'), label: t.nav.criteria },
+    { href: L('/pricing'), label: t.nav.quote },
+    { href: L('/faq'), label: t.nav.faq },
     { href: '#contact', label: t.nav.contact },
   ];
 
@@ -181,11 +184,19 @@ function App() {
                   {t.footer.links.pmp}
                 </a>
               </li>
-              <li>
-                <a href="#services" className="text-[#bcc8de] no-underline transition-colors hover:text-[#e9b872]">
-                  {t.footer.links.allServices}
-                </a>
-              </li>
+              {[
+                ['/what-is-abet-accreditation', t.footer.links.guide],
+                ['/program-criteria', t.footer.links.criteria],
+                ['/abet-self-study-report', t.footer.links.ssr],
+                ['/faq', t.footer.links.faq],
+                ['/pricing', t.footer.links.pricing],
+              ].map(([href, label]) => (
+                <li key={href}>
+                  <a href={L(href)} className="text-[#bcc8de] no-underline transition-colors hover:text-[#e9b872]">
+                    {label}
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
 

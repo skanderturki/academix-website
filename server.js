@@ -458,12 +458,40 @@ const buildPath = path.join(__dirname, 'build');
 // always gets a new URL: cache those for a year. Everything else (index.html,
 // the logo, the social image) is revalidated on each visit so a release shows
 // up at once.
+// Generated files are reachable only at their own routes (see below), not at
+// their paths inside build/ (which would put every page at two addresses).
+app.use((req, res, next) => {
+  if (req.path.startsWith('/pages/') || ['/fr-index.html', '/404.html', '/pages-manifest.json'].includes(req.path)) {
+    return res.status(404).sendFile(path.join(buildPath, '404.html'));
+  }
+  next();
+});
 app.use('/static', express.static(path.join(buildPath, 'static'), { immutable: true, maxAge: '365d' }));
 app.use(express.static(buildPath, { maxAge: 0 }));
 
-// SPA fallback: any non-API route returns index.html
-app.get('*', (req, res) => {
-  res.sendFile(path.join(buildPath, 'index.html'));
+// Content pages generated at build time (scripts/pages/build.mjs): each route
+// maps to a static HTML file. A trailing slash redirects to the canonical
+// address without one.
+let pageRoutes = {};
+try {
+  pageRoutes = JSON.parse(fs.readFileSync(path.join(buildPath, 'pages-manifest.json'), 'utf8'));
+} catch {
+  console.warn('[pages] no pages-manifest.json: content pages are not served');
+}
+app.get('*', (req, res, next) => {
+  const p = req.path.length > 1 && req.path.endsWith('/') ? req.path.slice(0, -1) : req.path;
+  const file = pageRoutes[p];
+  if (!file) return next();
+  if (p !== req.path) return res.redirect(301, p + (req.url.slice(req.path.length) || ''));
+  res.set('Cache-Control', 'public, max-age=0');
+  res.sendFile(path.join(buildPath, file));
+});
+
+// Anything else is a real 404 (no longer the home page with status 200, which
+// search engines count as a "soft 404" and duplicate content).
+app.use((req, res) => {
+  if (req.path.startsWith('/api/')) return res.status(404).json({ error: 'not_found' });
+  res.status(404).sendFile(path.join(buildPath, '404.html'), (err) => { if (err) res.status(404).type('text/plain').send('Not found'); });
 });
 
 app.listen(PORT, () => {

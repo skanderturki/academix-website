@@ -27,11 +27,11 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && node scripts/pages/build.mjs",
     "serve": "node server.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "test:server": "node --test tests/quote.test.js"
+    "test:server": "node --test tests/quote.test.js tests/pages.test.mjs"
   },
   "eslintConfig": {
     "extends": [

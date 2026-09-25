@@ -30,7 +30,8 @@ Create React App boilerplate and can be ignored.) See the workspace-root
   in `src/i18n/content.js`, read through `useLanguage()`.
 - **Backend**: `server.js` — Express serving the CRA `build/` with a `/api/contact`
   endpoint (Resend email), `/api/quote` (see "License quotes" below), `express-rate-limit`, an optional HTTP Basic-Auth
-  preview gate (`SITE_PASSWORD`), constant-time auth compare, and SPA fallback.
+  preview gate (`SITE_PASSWORD`), constant-time auth compare. No SPA fallback:
+  only `/`, `/fr` and the static content pages exist; anything else is a real 404.
 - **Email**: Resend (`RESEND_API_KEY`, `RESEND_FROM`, `CONTACT_TO_EMAIL`).
 
 ## Key files
@@ -45,8 +46,9 @@ Create React App boilerplate and can be ignored.) See the workspace-root
 | `src/components/QuoteRequest.js` | `#quote`: "Request a quote" for an Academix licence (nav "Pricing", hero secondary button) |
 | `quote.js` | `POST /api/quote`: validates, relays the request signed to the platform's control plane, emails the customer a confirmation; `tests/quote.test.js` (`npm run test:server`) |
 | `public/index.html` | Title, description, Open Graph, JSON-LD (Organization + SoftwareApplication), and a plain-HTML summary inside `#root` for crawlers without JavaScript (keep it in step with the English copy) |
+| `scripts/pages/` | Static content pages (see "Content pages" below) |
 | `src/components/ui/*` | shadcn-style primitives (button/card/input/label/textarea/alert) |
-| `server.js` | Express + Resend + rate limit + Basic-Auth gate + SPA fallback |
+| `server.js` | Express + Resend + rate limit + Basic-Auth gate; serves the page routes from `build/pages-manifest.json`, 404 otherwise |
 | `Dockerfile` | Multi-stage CRA build → slim Node runtime serving `build/` |
 | `docker-compose.droplet-b.yml` | Production services on droplet B (see Deployment) |
 
@@ -101,6 +103,28 @@ npm start          # CRA dev server :3000
 npm run build      # production build -> build/
 npm run serve      # node server.js (serves build/ + /api/contact)
 ```
+
+## Content pages (SEO / AI answer engines)
+
+`npm run build` runs `react-scripts build` then `node scripts/pages/build.mjs`,
+which writes plain-HTML pages (readable without JavaScript) into `build/`:
+
+- `/what-is-abet-accreditation` (the ABET guide: what it is, commissions,
+  programs covered, criteria, eligibility, timeline), `/abet-self-study-report`,
+  `/student-outcomes-assessment`, `/abet-readiness`, `/program-criteria` and
+  `/program-criteria/{eac,etac,cac}`, `/pricing`, `/faq` (FAQPage schema), each
+  also under `/fr/...`; `/fr` is the French home (`LanguageContext` reads the
+  path).
+- `sitemap.xml` (with hreflang alternates), `llms.txt`, `404.html`,
+  `pages-manifest.json` (the routes `server.js` serves).
+
+Copy lives in `scripts/pages/content/en.mjs` and `fr.mjs` (keep them in step;
+`tests/pages.test.mjs` checks structure, title ≤ 70 and description 90–165
+characters); the shell is `scripts/pages/layout.mjs`. ABET facts come from the
+2026–27 APPM and criteria PDFs (see the abet_quality repo); the program-criteria
+lists in `scripts/pages/data/program-criteria.json` are exported from
+abet_quality's registry: re-export when ABET publishes a new cycle. Tailwind
+scans `scripts/pages/**/*.mjs`, so page classes compile into the main CSS.
 
 ## License quotes (academix.tn → admin.academix.tn)
 

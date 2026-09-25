@@ -1,0 +1,922 @@
+{
+ "source": "abet_quality server/config/programCriteria.js, 2026-27 cycle",
+ "generated": "2026-09-26",
+ "commissions": {
+  "EAC": [
+   {
+    "key": "aerospace",
+    "name": "Aerospace and Similarly Named Engineering Programs",
+    "leadSociety": "AIAA",
+    "societies": [
+     "Lead Society: American Institute of Aeronautics and Astronautics"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "agricultural",
+    "name": "Agricultural and Similarly Named Engineering Programs",
+    "leadSociety": "ASABE",
+    "societies": [
+     "Lead Society: American Society of Agricultural and Biological Engineers"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "architectural",
+    "name": "Architectural and Similarly Named Engineering Programs",
+    "leadSociety": "ASCE; ASHRAE",
+    "societies": [
+     "Lead Society: American Society of Civil Engineers",
+     "Cooperating Society: American Society of Heating, Refrigerating, and Air-Conditioning Engineers"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "biomedical",
+    "name": "Bioengineering and Biomedical and Similarly Named Engineering Programs",
+    "leadSociety": "Biomedical Engineering Society",
+    "societies": [
+     "Lead Society: Biomedical Engineering Society",
+     "Cooperating Societies: American Ceramic Society, American Institute of Chemical Engineers, American Society of Agricultural and Biological Engineers, American Society of Mechanical Engineers, and IEEE"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "biological",
+    "name": "Biological and Similarly Named Engineering Programs",
+    "leadSociety": "ASABE",
+    "societies": [
+     "Lead Society: American Society of Agricultural and Biological Engineers",
+     "Cooperating Societies: American Academy of Environmental Engineers and Scientists, American Ceramic Society, American Institute of Chemical Engineers, American Society of Civil Engineers, American Society of Mechanical Engineers, Biomedical Engineering Society, CSAB, IEEE, Institute of Industrial and Systems Engineers, and The Minerals, Metals, and Materials Society"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "chemical",
+    "name": "Chemical, Biochemical, Biomolecular, and Similarly Named Engineering Programs",
+    "leadSociety": "AIChE",
+    "societies": [
+     "Lead Society: American Institute of Chemical Engineers"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": true
+   },
+   {
+    "key": "civil",
+    "name": "Civil and Similarly Named Engineering Programs",
+    "leadSociety": "ASCE",
+    "societies": [
+     "Lead Society: American Society of Civil Engineers"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "construction",
+    "name": "Construction and Similarly Named Engineering Programs",
+    "leadSociety": "ASCE",
+    "societies": [
+     "Lead Society: American Society of Civil Engineers"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "cybersecurity-eng",
+    "name": "Cybersecurity Engineering and Similarly Named Engineering Programs",
+    "leadSociety": "IEEE; CSAB; INCOSE",
+    "societies": [
+     "Co-Lead Societies: IEEE, CSAB, International Council on Systems Engineering (INCOSE)"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "ecological",
+    "name": "Ecological and Similarly Named Engineering Programs",
+    "leadSociety": "AAEES; ASABE; ASCE",
+    "societies": [
+     "Co-Lead Societies: American Academy of Environmental Engineers and Scientists, American Society of Agricultural and Biological Engineers, and American Society of Civil Engineers"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "software",
+    "name": "Software and Similarly Named Engineering Programs",
+    "leadSociety": "CSAB (cooperating: IEEE)",
+    "societies": [
+     "Lead Society: CSAB",
+     "Cooperating Society: IEEE"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "electrical-computer",
+    "name": "Electrical, Computer, Communications, Telecommunication(s), and Similarly Named Engineering Programs",
+    "leadSociety": "IEEE; CSAB (computer)",
+    "societies": [
+     "Lead Society: IEEE",
+     "Cooperating Society for Computer Engineering Programs: CSAB"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "engineering-management",
+    "name": "Engineering Management and Similarly Named Engineering Programs",
+    "leadSociety": "IISE",
+    "societies": [
+     "Lead Society: Institute of Industrial and Systems Engineers",
+     "Cooperating Societies: American Institute of Chemical Engineers, American Society of Civil Engineers, American Society of Mechanical Engineers, IEEE, Society of Manufacturing Engineers, and Society of Petroleum Engineers"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "engineering-mechanics",
+    "name": "Engineering Mechanics and Similarly Named Engineering Programs",
+    "leadSociety": "ASME",
+    "societies": [
+     "Lead Society: American Society of Mechanical Engineers"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "environmental-eng",
+    "name": "Environmental Engineering and Similarly Named Engineering Programs",
+    "leadSociety": "AAEES",
+    "societies": [
+     "Lead Society: American Academy of Environmental Engineers and Scientists",
+     "Cooperating Societies: American Institute of Chemical Engineers, American Society of Agricultural and Biological Engineers, American Society of Civil Engineers, American Society of Heating, Refrigerating and Air-Conditioning Engineers, American Society of Mechanical Engineers, SAE International, and Society for Mining, Metallurgy, and Exploration"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": true
+   },
+   {
+    "key": "fire-protection",
+    "name": "Fire Protection and Similarly Named Engineering Programs",
+    "leadSociety": "SFPE",
+    "societies": [
+     "Lead Society: Society for Fire Protection Engineers"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "geological-eng",
+    "name": "Geological and Similarly Named Engineering Programs",
+    "leadSociety": "SME",
+    "societies": [
+     "Lead Society: Society for Mining, Metallurgy, and Exploration"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "industrial",
+    "name": "Industrial and Similarly Named Engineering Programs",
+    "leadSociety": "IISE",
+    "societies": [
+     "Lead Society: Institute of Industrial and Systems Engineers"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "manufacturing",
+    "name": "Manufacturing and Similarly Named Engineering Programs",
+    "leadSociety": "SME",
+    "societies": [
+     "Lead Society: Society of Manufacturing Engineers"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "mineral-processing",
+    "name": "Mineral Processing, Extractive Metallurgical, and Similarly Named Engineering Programs",
+    "leadSociety": "SME; TMS",
+    "societies": [
+     "Lead Society: Society for Mining, Metallurgy, and Exploration",
+     "Cooperating Society for Extractive Metallurgical Engineering Programs: The Minerals, Metals & Materials Society"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "materials",
+    "name": "Materials (1), Metallurgical (2), Ceramics (3), and Similarly Named Engineering Programs",
+    "leadSociety": "TMS; ACerS",
+    "societies": [
+     "(1,2) Lead Society for Materials and Metallurgical Engineering Programs: The Minerals, Metals & Materials Society",
+     "(3) Lead Society for Ceramics Engineering Programs: American Ceramic Society",
+     "(1) Cooperating Societies for Materials Engineering Programs: American Ceramic Society, American Institute of Chemical Engineers, and American Society of Mechanical Engineers",
+     "(2) Cooperating Society for Metallurgical Engineering Programs: Society for Mining, Metallurgy, and Exploration",
+     "(3) Cooperating Society for Ceramics Engineering Programs: The Minerals, Metals & Materials Society"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "mechatronics",
+    "name": "Mechatronics, Robotics, and Similarly Named Engineering Programs",
+    "leadSociety": "ASME; IEEE",
+    "societies": [
+     "Co-Lead Societies: American Society of Mechanical Engineers and IEEE",
+     "Cooperating Societies: CSAB, Society of Manufacturing Engineers"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "mining",
+    "name": "Mining and Similarly Named Engineering Programs",
+    "leadSociety": "SME",
+    "societies": [
+     "Lead Society: Society for Mining, Metallurgy, and Exploration"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "naval-marine-ocean",
+    "name": "Naval Architecture, Marine Engineering, Ocean Engineering, and Similarly Named Engineering Programs",
+    "leadSociety": "SNAME; ASCE; IEEE",
+    "societies": [
+     "Lead Society: Society of Naval Architects and Marine Engineers",
+     "Cooperating Societies for Ocean Engineering: American Society of Civil Engineers and IEEE"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "nuclear",
+    "name": "Nuclear, Radiological, and Similarly Named Engineering Programs",
+    "leadSociety": "American Nuclear Society",
+    "societies": [
+     "Lead Society: American Nuclear Society"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "optical",
+    "name": "Optical, Photonic, and Similarly Named Engineering Programs",
+    "leadSociety": "IEEE",
+    "societies": [
+     "Lead Society: IEEE"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "petroleum",
+    "name": "Petroleum and Similarly Named Engineering Programs",
+    "leadSociety": "Society of Petroleum Engineers",
+    "societies": [
+     "Lead Society: Society of Petroleum Engineers"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "surveying-eng",
+    "name": "Surveying and Similarly Named Engineering Programs",
+    "leadSociety": "NSPS; ASCE",
+    "societies": [
+     "Lead Society: National Society for Professional Surveyors",
+     "Cooperating Society: American Society of Civil Engineers"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "mechanical",
+    "name": "Mechanical and Similarly Named Engineering Programs",
+    "leadSociety": "ASME",
+    "societies": [
+     "Lead Society: American Society of Mechanical Engineers"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "systems",
+    "name": "Systems and Similarly Named Engineering Programs",
+    "leadSociety": "ASME; CSAB; IEEE; IISE; ISA; INCOSE; SAE",
+    "societies": [
+     "Co-Lead Societies: American Society of Mechanical Engineers, CSAB, IEEE, Institute of Industrial and Systems Engineers, ISA, International Council on Systems Engineering (INCOSE), and SAE International"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "general-engineering",
+    "name": "Engineering, General Engineering, Engineering Physics, Engineering Science, and Similarly Named Engineering Programs",
+    "leadSociety": "ASEE",
+    "societies": [
+     "Lead Society: American Society for Engineering Education"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   }
+  ],
+  "CAC": [
+   {
+    "key": "cybersecurity-associate",
+    "name": "Cybersecurity and Similarly Named Associate Level Computing Programs",
+    "leadSociety": "CSAB",
+    "societies": null,
+    "verbatim": true,
+    "status": "in-force",
+    "levels": [
+     "associate"
+    ],
+    "hasProposedChange": false
+   },
+   {
+    "key": "information-technology-associate",
+    "name": "Information Technology and Similarly Named Associate Level Computing Programs",
+    "leadSociety": "CSAB",
+    "societies": null,
+    "verbatim": true,
+    "status": "in-force",
+    "levels": [
+     "associate"
+    ],
+    "hasProposedChange": false
+   },
+   {
+    "key": "computer-science",
+    "name": "Computer Science and Similarly Named Computing Programs",
+    "leadSociety": "CSAB",
+    "societies": null,
+    "verbatim": true,
+    "status": "in-force",
+    "levels": [
+     "bachelor",
+     "master"
+    ],
+    "hasProposedChange": false
+   },
+   {
+    "key": "cybersecurity",
+    "name": "Cybersecurity and Similarly Named Computing Programs",
+    "leadSociety": "CSAB",
+    "societies": null,
+    "verbatim": true,
+    "status": "in-force",
+    "levels": [
+     "bachelor",
+     "master"
+    ],
+    "hasProposedChange": false
+   },
+   {
+    "key": "data-science-cac",
+    "name": "Data Science, Data Analytics and Similarly Named Computing Programs",
+    "leadSociety": "CSAB",
+    "societies": null,
+    "verbatim": true,
+    "status": "in-force",
+    "levels": [
+     "bachelor",
+     "master"
+    ],
+    "hasProposedChange": false
+   },
+   {
+    "key": "information-systems",
+    "name": "Information Systems and Similarly Named Computing Programs",
+    "leadSociety": "CSAB",
+    "societies": null,
+    "verbatim": true,
+    "status": "in-force",
+    "levels": [
+     "bachelor",
+     "master"
+    ],
+    "hasProposedChange": true
+   },
+   {
+    "key": "information-technology",
+    "name": "Information Technology and Similarly Named Computing Programs",
+    "leadSociety": "CSAB",
+    "societies": null,
+    "verbatim": true,
+    "status": "in-force",
+    "levels": [
+     "bachelor",
+     "master"
+    ],
+    "hasProposedChange": false
+   },
+   {
+    "key": "ai-ml",
+    "name": "Artificial Intelligence, Machine Learning, and Similarly Named Computing Programs (proposed)",
+    "leadSociety": "CSAB",
+    "societies": null,
+    "verbatim": true,
+    "status": "proposed",
+    "levels": [
+     "bachelor",
+     "master"
+    ],
+    "hasProposedChange": false
+   }
+  ],
+  "ETAC": [
+   {
+    "key": "aeronautical-et",
+    "name": "Aeronautical Engineering Technology and Similarly Named Programs",
+    "leadSociety": "AIAA",
+    "societies": [
+     "Lead Society: American Institute of Aeronautics and Astronautics"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "hvac-et",
+    "name": "Air Conditioning, Refrigerating, Heating and Ventilating Engineering Technology and Similarly Named Programs",
+    "leadSociety": "ASHRAE",
+    "societies": [
+     "Lead Society: American Society of Heating, Refrigeration and Air-Conditioning Engineers"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "architectural-et",
+    "name": "Architectural Engineering Technology and Similarly Named Programs",
+    "leadSociety": "ASCE",
+    "societies": [
+     "Lead Society: American Society of Civil Engineers"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "automotive-et",
+    "name": "Automotive Engineering Technology and Similarly Named Programs",
+    "leadSociety": "SAE International",
+    "societies": [
+     "Lead Society: SAE, International"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "chemical-et",
+    "name": "Chemical/Refinery Process Engineering Technology and Similarly Named Programs",
+    "leadSociety": "AIChE",
+    "societies": [
+     "Lead Society: American Institute of Chemical Engineers"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "civil-et",
+    "name": "Civil Engineering Technology and Similarly Named Programs",
+    "leadSociety": "ASCE",
+    "societies": [
+     "Lead Society: American Society of Civil Engineers"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "construction-mgmt-et",
+    "name": "Construction Management Technology and Similarly Named Programs",
+    "leadSociety": "CMAA",
+    "societies": [
+     "Lead Society: Construction Management Association of America"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "construction-eng-et",
+    "name": "Construction Engineering Technology and Similarly Named Programs",
+    "leadSociety": "ASCE",
+    "societies": [
+     "Lead Society: American Society of Civil Engineers"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "electromechanical-et",
+    "name": "Electromechanical Engineering Technology and Similarly Named Programs",
+    "leadSociety": "IEEE (cooperating: ASME, ISA)",
+    "societies": [
+     "Lead Society: IEEE",
+     "Cooperating Society: American Society of Mechanical Engineers and International Society of Automation"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": true
+   },
+   {
+    "key": "mechatronics-et",
+    "name": "Mechatronics Engineering Technology and Similarly Named Programs",
+    "leadSociety": "ASME; IEEE; SME",
+    "societies": [
+     "Lead Societies: ASME, IEEE, SME"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "telecom-et",
+    "name": "Telecommunications Engineering Technology and Similarly Named Programs",
+    "leadSociety": "IEEE",
+    "societies": [
+     "Lead Society: IEEE"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "information-cyber-et",
+    "name": "Information, Information Security, Cybersecurity, Information Assurance Engineering Technology and Similarly Named Programs",
+    "leadSociety": "IEEE (cooperating: CSAB)",
+    "societies": [
+     "Lead Society: IEEE",
+     "Cooperating Society: CSAB"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "computer-et",
+    "name": "Computer Engineering Technology and Similarly Named Programs",
+    "leadSociety": "IEEE (cooperating: IISE)",
+    "societies": [
+     "Lead Society: IEEE",
+     "Cooperating Society: Institute of Industrial and Systems Engineers"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "electrical-et",
+    "name": "Electrical/Electronic(s) Engineering Technology and Similarly Named Programs",
+    "leadSociety": "IEEE",
+    "societies": [
+     "Lead Society: IEEE"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "environmental-et",
+    "name": "Environmental Engineering Technology and Similarly Named Programs",
+    "leadSociety": "AAEES",
+    "societies": [
+     "Lead Society: American Academy of Environmental Engineers and Scientists",
+     "Cooperating Societies: American Institute of Chemical Engineers; American Society of Civil Engineers; American Society of Heating, Refrigerating, and Air Conditioning Engineers; American Society of Mechanical Engineers; SAE International; and Society of Mining, Metallurgy, and Exploration"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "fire-protection-et",
+    "name": "Fire Protection Engineering Technology and Similarly Named Programs",
+    "leadSociety": "SFPE",
+    "societies": [
+     "Lead Society: Society of Fire Protection Engineers"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "healthcare-et",
+    "name": "Healthcare Engineering Technology and Similarly Named Programs",
+    "leadSociety": "IEEE",
+    "societies": [
+     "Lead Society: IEEE",
+     "Cooperating Societies: American Ceramic Society, American Institute of Chemical Engineers, American Society of Agricultural and Biological Engineers, and American Society of Mechanical Engineers"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "industrial-et",
+    "name": "Industrial Engineering Technology and Similarly Named Programs",
+    "leadSociety": "IISE",
+    "societies": [
+     "Lead Society: Institute of Industrial and Systems Engineers"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "instrumentation-et",
+    "name": "Instrumentation and Control Systems Engineering Technology and Similarly Named Programs",
+    "leadSociety": "ISA",
+    "societies": [
+     "Lead Society: International Society of Automation"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "manufacturing-et",
+    "name": "Manufacturing Engineering Technology and Similarly Named Programs",
+    "leadSociety": "SME",
+    "societies": [
+     "Lead Society: SME"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "marine-et",
+    "name": "Marine Engineering Technology and Similarly Named Programs",
+    "leadSociety": "SNAME",
+    "societies": [
+     "Lead Society: Society of Naval Architects and Marine Engineering"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "nuclear-et",
+    "name": "Nuclear Engineering Technology and Similarly Named Programs",
+    "leadSociety": "American Nuclear Society",
+    "societies": [
+     "Lead Society: American Nuclear Society"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "surveying-et",
+    "name": "Surveying/Geomatics Engineering Technology and Similarly Named Programs",
+    "leadSociety": "NSPS (cooperating: ASCE)",
+    "societies": [
+     "Lead Society: National Society of Professional Surveyors",
+     "Cooperating Society: American Society of Civil Engineers"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "graphics-et",
+    "name": "Engineering Graphics/Design/Drafting Engineering Technology (Mechanical) and Similarly Named Programs",
+    "leadSociety": "ASME (cooperating: SME)",
+    "societies": [
+     "Lead Society: American Society of Mechanical Engineers",
+     "Cooperating Society: Society of Manufacturing Engineers"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": true
+   },
+   {
+    "key": "mechanical-et",
+    "name": "Mechanical Engineering Technology and Similarly Named Programs",
+    "leadSociety": "ASME",
+    "societies": [
+     "Lead Society: American Society of Mechanical Engineers"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "general-et",
+    "name": "Engineering Technology and Similarly Named Programs",
+    "leadSociety": "ASEE",
+    "societies": [
+     "Lead Society: American Society for Engineering Education"
+    ],
+    "verbatim": true,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   }
+  ],
+  "ANSAC": [
+   {
+    "key": "construction-mgmt-ansac",
+    "name": "Construction Management and Similarly Named Programs",
+    "leadSociety": "CMAA",
+    "societies": null,
+    "verbatim": false,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "data-science-ansac",
+    "name": "Data Science, Data Analytics and Similarly Named Programs",
+    "leadSociety": "CSAB",
+    "societies": null,
+    "verbatim": false,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "environmental-science",
+    "name": "Environmental Science and Similarly Named Programs",
+    "leadSociety": "AAEES",
+    "societies": null,
+    "verbatim": false,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "ehs",
+    "name": "Environmental, Health and Safety and Similarly Named Programs",
+    "leadSociety": "AIHA; ASSP",
+    "societies": null,
+    "verbatim": false,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "facility-management",
+    "name": "Facility Management and Similarly Named Programs",
+    "leadSociety": "IFMA",
+    "societies": null,
+    "verbatim": false,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "geology",
+    "name": "Geology, Geological Science and Similarly Named Programs",
+    "leadSociety": "SME/AIME",
+    "societies": null,
+    "verbatim": false,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "health-physics",
+    "name": "Health Physics and Similarly Named Programs",
+    "leadSociety": "AIHA (cooperating: ANS)",
+    "societies": null,
+    "verbatim": false,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "industrial-hygiene",
+    "name": "Industrial Hygiene and Similarly Named Programs",
+    "leadSociety": "AIHA (cooperating: AAEES)",
+    "societies": null,
+    "verbatim": false,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "safety",
+    "name": "Safety and Similarly Named Programs",
+    "leadSociety": "ASSP",
+    "societies": null,
+    "verbatim": false,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   },
+   {
+    "key": "surveying-geomatics",
+    "name": "Surveying, Geomatics and Similarly Named Programs",
+    "leadSociety": "NSPS (cooperating: ASCE)",
+    "societies": null,
+    "verbatim": false,
+    "status": "in-force",
+    "levels": null,
+    "hasProposedChange": false
+   }
+  ]
+ }
+}
