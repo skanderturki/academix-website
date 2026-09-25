@@ -131,7 +131,7 @@ services:
       PORT: "3000"
       RESEND_API_KEY: ${MAIN_RESEND_API_KEY:-}
       RESEND_FROM: ${MAIN_RESEND_FROM:-Academix <academix@jahiz.tn>}
-      CONTACT_TO_EMAIL: ${MAIN_CONTACT_TO_EMAIL:-academix@jahiz.tn}
+      CONTACT_TO_EMAIL: ${MAIN_CONTACT_TO_EMAIL:-contact@jahiz.tn}
       # "Request a quote" relay to the platform's control plane (quote.js). The
       # secret must equal ORDER_INTAKE_SECRET on the platform server, and the
       # platform's INTAKE_ALLOWED_IPS must list this droplet (165.232.175.224).
