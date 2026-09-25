@@ -1,17 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Menu, X, Mail, Languages } from 'lucide-react';
 import Home from './components/Home';
-import Login from './components/Login';
-import Register from './components/Register';
-import Portfolio from './components/Portfolio';
 import QuoteRequest from './components/QuoteRequest';
-import { useAuth } from './contexts/AuthContext';
 import { useLanguage } from './contexts/LanguageContext';
 import { initAnalytics } from './lib/analytics';
 import { cn } from './lib/utils';
 
 function BrandLogo({ className }) {
-  return <img src="/logo.png" alt="Academix" className={className} draggable={false} />;
+  return <img src="/logo-192.png" alt="Academix" className={className} draggable={false} />;
 }
 
 // LinkedIn glyph (lucide dropped brand marks, so it's inlined).
@@ -24,7 +20,6 @@ function LinkedInIcon({ className }) {
 }
 
 function App() {
-  const { isAuthenticated, logout } = useAuth();
   const { t, lang, toggleLang } = useLanguage();
   const [currentView, setCurrentView] = useState('home');
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -34,9 +29,12 @@ function App() {
     const handleHashChange = () => {
       const hash = window.location.hash.slice(1) || 'home';
       const view = hash.split('#')[0].split('/')[0];
-      setCurrentView(['home', 'login', 'register', 'portfolio', 'quote'].includes(view) ? view : 'home');
+      setCurrentView(['home', 'quote'].includes(view) ? view : 'home');
       setMobileOpen(false);
       if (view === 'quote') window.scrollTo(0, 0);
+      // A section link (#platform, #contact…) followed from another view: the
+      // section only exists once home has rendered, so scroll on the next frame.
+      else if (hash && hash !== 'home') requestAnimationFrame(() => document.getElementById(hash)?.scrollIntoView());
     };
     handleHashChange();
     window.addEventListener('hashchange', handleHashChange);
@@ -46,18 +44,14 @@ function App() {
   // First-party analytics: pageviews + clicks -> /api/track (embedded SQLite).
   useEffect(() => { initAnalytics(); }, []);
 
-  const handleLogout = () => {
-    logout();
-    setCurrentView('home');
-    window.location.hash = '#home';
-  };
 
+  // Sections live on the home page; '#quote' is its own view.
   const navLinks = [
-    { href: '#home', label: t.nav.home },
-    { href: '#about', label: t.nav.about },
+    { href: '#platform', label: t.nav.platform },
+    { href: '#how', label: t.nav.how },
     { href: '#services', label: t.nav.services },
+    { href: '#quote', label: t.nav.quote },
     { href: '#contact', label: t.nav.contact },
-    { href: 'https://pmp.academix.tn', label: t.nav.pmp, external: true },
   ];
 
   const LangToggle = ({ className }) => (
@@ -101,27 +95,16 @@ function App() {
                 {link.label}
               </a>
             ))}
-            {isAuthenticated && (
-              <>
-                <button
-                  type="button"
-                  onClick={handleLogout}
-                  className="text-[14.5px] font-medium text-[#aebbd2] transition-colors hover:text-white"
-                >
-                  {t.nav.logout}
-                </button>
-              </>
-            )}
           </nav>
 
           {/* Right: language + CTA + mobile toggle */}
           <div className="flex items-center gap-3">
             <LangToggle className="hidden sm:inline-flex" />
             <a
-              href="#quote"
+              href="#contact"
               className="hidden rounded-[9px] bg-[#e9b872] px-[18px] py-[10px] text-sm font-semibold text-[#0a1628] no-underline shadow-[0_6px_18px_rgba(233,184,114,.25)] transition-colors hover:bg-[#f3c685] md:inline-block"
             >
-              {t.quote.nav}
+              {t.nav.demo}
             </a>
             <button
               type="button"
@@ -155,23 +138,12 @@ function App() {
                 {link.label}
               </a>
             ))}
-            {isAuthenticated && (
-              <>
-                <button
-                  type="button"
-                  onClick={handleLogout}
-                  className="text-left rounded-lg px-4 py-3 text-sm font-medium text-white/90 hover:bg-white/10"
-                >
-                  {t.nav.logout}
-                </button>
-              </>
-            )}
             <a
-              href="#quote"
+              href="#contact"
               onClick={() => setMobileOpen(false)}
               className="mx-4 my-2 rounded-[9px] bg-[#e9b872] px-4 py-3 text-center text-sm font-semibold text-[#0a1628] no-underline"
             >
-              {t.quote.nav}
+              {t.nav.demo}
             </a>
             <div className="px-4 py-3">
               <LangToggle />
@@ -181,13 +153,7 @@ function App() {
       </header>
 
       <main className="flex-1">
-        {currentView === 'login' ? (
-          <Login />
-        ) : currentView === 'register' ? (
-          <Register />
-        ) : currentView === 'portfolio' ? (
-          <Portfolio />
-        ) : currentView === 'quote' ? (
+        {currentView === 'quote' ? (
           <QuoteRequest />
         ) : (
           <Home />

@@ -9,8 +9,13 @@ Create React App boilerplate and can be ignored.) See the workspace-root
 - **academix.tn** — the university-focused website of **Jahiz Digital Solutions**
   (the company), and the home of all its university-related projects/services. It
   is a *second* company site, sibling to the main corporate site at jahiz.tn.
-- a polished single-page marketing site (React + Express) for Jahiz's
-  university-related software tools.
+- the sales site for **Academix, the ABET accreditation platform** (the
+  `abet_quality` product at admin.academix.tn), aimed at Gulf universities whose
+  engineering and computing departments work in English. English leads; French
+  is a secondary toggle. The main call to action is **Book an online demo**
+  (the contact form, demo preselected), then **Request a quote** (`#quote`).
+  Claims must match what abet_quality actually ships: no NCAAA alignment claim,
+  no customer logos or testimonials until there is a pilot.
 
 > Older copies of this file titled it "skasystems-main"; that was a stale name
 > for Jahiz.
@@ -33,12 +38,11 @@ Create React App boilerplate and can be ignored.) See the workspace-root
 | Path | Role |
 |------|------|
 | `src/App.js` | Header (mesh banner + sticky nav), footer, hash-based view routing |
-| `src/components/Home.js` | Hero/About/Services/WhyChoose/Contact; `GridGlowBackground` canvas + `fadeUp` motion variants |
+| `src/components/Home.js` | Hero / Platform (7 capabilities) / How it works (4 steps) / Services (automation, AI) / Why / Contact |
 | `src/components/ContactForm.js` | Resend-backed contact form (name/email/org/serviceType/message) |
-| `src/components/QuoteRequest.js` | `#quote`: "Request a quote" for an Academix licence (header CTA; also on the quality-platform service card) |
+| `src/components/QuoteRequest.js` | `#quote`: "Request a quote" for an Academix licence (nav "Pricing", hero secondary button) |
 | `quote.js` | `POST /api/quote`: validates, relays the request signed to the platform's control plane, emails the customer a confirmation; `tests/quote.test.js` (`npm run test:server`) |
-| `src/components/{Login,Register,Portfolio}.js` | Auth views + portfolio |
-| `src/contexts/AuthContext.js` | Client auth state |
+| `public/index.html` | Title, description, Open Graph, JSON-LD (Organization + SoftwareApplication), and a plain-HTML summary inside `#root` for crawlers without JavaScript (keep it in step with the English copy) |
 | `src/components/ui/*` | shadcn-style primitives (button/card/input/label/textarea/alert) |
 | `server.js` | Express + Resend + rate limit + Basic-Auth gate + SPA fallback |
 | `Dockerfile` | Multi-stage CRA build → slim Node runtime serving `build/` |

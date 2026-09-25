@@ -2,47 +2,57 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" type="image/png" href="%PUBLIC_URL%/logo.png" />
+    <link rel="icon" type="image/png" href="%PUBLIC_URL%/logo-192.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#0a1628" />
     <meta
       name="description"
-      content="Academix builds quality assurance and academic management software for universities — ABET and NCAAA accreditation evidence, CLO/PLO assessment, curriculum analysis, and academic process automation."
+      content="ABET accreditation software for universities: assess Student Outcomes, track readiness per criterion and generate the Self-Study Report. Book an online demo."
     />
-    <meta
-      name="keywords"
-      content="university quality assurance, ABET accreditation, NCAAA accreditation, CLO assessment, PLO assessment, academic software, university management, n8n academic automation, Tunisia"
-    />
-    <meta property="og:title" content="Academix — University Software Solutions | Quality Assurance" />
-    <meta property="og:description" content="Quality assurance and accreditation software for universities. ABET, NCAAA, CLO/PLO assessment, and academic process automation." />
+    <meta property="og:title" content="Academix: ABET accreditation software for universities" />
+    <meta property="og:description" content="Course assessment, Student Outcomes, readiness per criterion and a generated ABET Self-Study Report, for EAC, CAC, ETAC and ANSAC programs." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://academix.tn/" />
     <meta property="og:site_name" content="Academix" />
     <meta property="og:locale" content="en_US" />
     <meta property="og:locale:alternate" content="fr_FR" />
-    <meta property="og:image" content="https://academix.tn/banner.png" />
+    <meta property="og:image" content="https://academix.tn/banner.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Academix — university quality assurance software" />
+    <meta property="og:image:alt" content="Academix, ABET accreditation software" />
+    <meta name="twitter:card" content="summary_large_image" />
     <link rel="canonical" href="https://academix.tn/" />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo.png" />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo-192.png" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "Organization",
-        "name": "Academix",
-        "url": "https://academix.tn",
-        "logo": "https://academix.tn/logo.png",
-        "description": "University software solutions and quality assurance — ABET/NCAAA accreditation evidence, CLO/PLO assessment, curriculum analysis, and academic process automation.",
-        "email": "academix@jahiz.tn",
-        "sameAs": [
-          "https://jahiz.tn",
-          "https://www.linkedin.com/in/jahiz-digital-solutions-922998412"
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://academix.tn/#org",
+            "name": "Academix",
+            "url": "https://academix.tn",
+            "logo": "https://academix.tn/logo-192.png",
+            "email": "academix@jahiz.tn",
+            "parentOrganization": { "@type": "Organization", "name": "Jahiz Digital Solutions", "url": "https://jahiz.tn" },
+            "sameAs": ["https://jahiz.tn", "https://www.linkedin.com/in/jahiz-digital-solutions-922998412"]
+          },
+          {
+            "@type": "SoftwareApplication",
+            "name": "Academix",
+            "url": "https://academix.tn",
+            "applicationCategory": "BusinessApplication",
+            "applicationSubCategory": "Accreditation management",
+            "operatingSystem": "Web",
+            "description": "ABET accreditation software for universities: Student Outcomes assessment, course reports, readiness per criterion, Program Criteria for EAC, ETAC and CAC disciplines, and a generated Self-Study Report.",
+            "audience": { "@type": "Audience", "audienceType": "Universities preparing ABET accreditation" },
+            "publisher": { "@id": "https://academix.tn/#org" }
+          }
         ]
       }
     </script>
-    <title>Academix — University Software Solutions | Quality Assurance</title>
+    <title>ABET Accreditation Software for Universities | Academix</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -52,6 +62,22 @@
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Read by crawlers that don't run JavaScript; React replaces it on load. Keep in step with src/i18n/content.js (en). -->
+      <main>
+        <h1>From course assessment to the ABET Self-Study Report</h1>
+        <p>Academix is the accreditation platform for ABET programs. Instructors assess, coordinators report, quality managers track readiness criterion by criterion, and the Self-Study Report is generated from the evidence you collected all year.</p>
+        <h2>The platform</h2>
+        <ul>
+          <li><strong>Self-Study Report, generated</strong>: your commission's official outline, Criteria 1 to 8, Program Criteria and appendices, with Tables 5-1 and 6-1 and an evidence binder, as an editable Word document.</li>
+          <li><strong>Program Criteria, word for word</strong>: the 2026-27 Program Criteria for every EAC, ETAC and CAC discipline.</li>
+          <li><strong>ABET Readiness Center</strong>: where each criterion stands and what is missing next.</li>
+          <li><strong>Student Outcomes assessment</strong>: PEOs, Student Outcomes, performance indicators and CLOs in one chain, with assessment campaigns per term.</li>
+          <li><strong>Course reports</strong>: lock on submit, with Word export in the ETEC TP-154 format.</li>
+          <li><strong>Continuous improvement</strong>: constituent surveys, PEO reviews and closed-loop improvement actions for Criterion 4.</li>
+        </ul>
+        <p><a href="https://academix.tn/#contact">Book an online demo</a> · <a href="https://academix.tn/#quote">Request a quote</a> · <a href="mailto:academix@jahiz.tn">academix@jahiz.tn</a></p>
+      </main>
+    </div>
   </body>
 </html>

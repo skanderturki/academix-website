@@ -75,13 +75,13 @@ function Hero() {
 
             <motion.div custom={3} variants={rise} initial="hidden" animate="show" className="mb-10 flex flex-wrap items-center gap-4">
               <a
-                href="#services"
+                href="#contact"
                 className="inline-flex items-center gap-2.5 rounded-[11px] bg-[#e9b872] px-[26px] py-[15px] text-[15.5px] font-semibold text-[#0a1628] no-underline shadow-[0_10px_30px_rgba(233,184,114,.28)] transition hover:-translate-y-px hover:bg-[#f3c685]"
               >
                 {t.hero.ctaPrimary} <ArrowRight size={18} />
               </a>
               <a
-                href="#contact"
+                href="#quote"
                 className="rounded-[11px] border border-white/[.14] px-[22px] py-[15px] text-[15.5px] font-semibold text-[#dfe7f4] no-underline transition-colors hover:border-[#e9b872]/50 hover:text-white"
               >
                 {t.hero.ctaSecondary}
@@ -127,34 +127,75 @@ function Hero() {
 }
 
 /* -------------------------------------------------------------------------- */
-/*  Who we are                                                                 */
+/*  The platform                                                               */
 /* -------------------------------------------------------------------------- */
 
-function About() {
+function Platform() {
   const { t } = useLanguage();
   return (
-    <section id="about" className="section-anchor relative border-t border-white/[.06]">
+    <section id="platform" className="section-anchor relative border-t border-white/[.06]">
       <div className="container-page py-20 md:py-24">
-        <div className="grid items-start gap-14 lg:grid-cols-[.8fr_1.2fr]">
-          <div>
-            <Eyebrow>{t.about.eyebrow}</Eyebrow>
-            <h2 className="font-serif text-[34px] font-normal leading-[1.1] text-[#fbfcfe] sm:text-[40px]">
-              {t.about.title} <span className="text-[#e9b872]">{t.about.titleHighlight}</span>.
+        <div className="grid items-start gap-12 lg:grid-cols-[.75fr_1.25fr]">
+          <div className="lg:sticky lg:top-28">
+            <Eyebrow>{t.platform.eyebrow}</Eyebrow>
+            <h2 className="mb-5 font-serif text-[34px] font-normal leading-[1.1] text-[#fbfcfe] sm:text-[42px]" style={{ textWrap: 'balance' }}>
+              {t.platform.title} <span className="text-[#e9b872]">{t.platform.titleHighlight}</span>
             </h2>
+            <p className="max-w-[400px] text-[16px] leading-[1.6] text-[#a9b7d0]">{t.platform.intro}</p>
           </div>
-          <div>
-            <p className="mb-[18px] text-[17px] leading-[1.65] text-[#b3c0d8] sm:text-[18px]">{t.about.p1}</p>
-            <p className="mb-[34px] text-[15.5px] leading-[1.65] text-[#8d9cb7]">{t.about.p2}</p>
-            <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-3">
-              {t.about.capabilities.map((p) => (
-                <div key={p.label} className="rounded-[13px] border border-white/[.09] bg-white/[.02] px-4 py-[18px]">
-                  <div className="mb-1.5 text-[15px] font-bold text-[#eef3fb]">{p.label}</div>
-                  <div className="text-[13px] leading-[1.45] text-[#8c9bb6]">{p.desc}</div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <ul className="border-t border-white/[.08]">
+            {t.platform.features.map((f) => (
+              <motion.li
+                key={f.title}
+                variants={reveal}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true, margin: '-60px' }}
+                className="grid gap-2 border-b border-white/[.08] py-6 sm:grid-cols-[230px_1fr] sm:gap-8"
+              >
+                <h3 className="flex items-start gap-2.5 text-[17px] font-semibold leading-[1.35] text-[#fbfcfe]">
+                  <Check size={16} className="mt-[3px] flex-none text-[#e9b872]" />
+                  {f.title}
+                </h3>
+                <p className="text-[15px] leading-[1.6] text-[#98a7c1]">{f.desc}</p>
+              </motion.li>
+            ))}
+          </ul>
         </div>
+      </div>
+    </section>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*  How a term runs (a real sequence, so the steps are numbered)               */
+/* -------------------------------------------------------------------------- */
+
+function HowItWorks() {
+  const { t } = useLanguage();
+  return (
+    <section id="how" className="section-anchor relative border-t border-white/[.06] bg-gradient-to-b from-transparent to-[#0d1a2e]/60">
+      <div className="container-page py-20 md:py-24">
+        <Eyebrow>{t.how.eyebrow}</Eyebrow>
+        <h2 className="mb-12 font-serif text-[34px] font-normal leading-[1.1] text-[#fbfcfe] sm:text-[42px]">
+          {t.how.title} <span className="text-[#e9b872]">{t.how.titleHighlight}</span>
+        </h2>
+        <ol className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          {t.how.steps.map((step, i) => (
+            <motion.li
+              key={step.title}
+              variants={reveal}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, margin: '-60px' }}
+              className="border-t border-[#e9b872]/40 pt-5"
+            >
+              <div className="mb-3 font-mono text-[12px] tracking-[1.5px] text-[#e9b872]">{String(i + 1).padStart(2, '0')}</div>
+              <h3 className="mb-2 text-[17px] font-semibold text-[#fbfcfe]">{step.title}</h3>
+              <p className="text-[14.5px] leading-[1.6] text-[#98a7c1]">{step.desc}</p>
+            </motion.li>
+          ))}
+        </ol>
       </div>
     </section>
   );
@@ -171,11 +212,11 @@ function Services() {
       <div className="container-page py-20 md:py-24">
         <Eyebrow>{t.services.eyebrow}</Eyebrow>
         <h2 className="mb-3 max-w-[740px] font-serif text-[36px] font-normal leading-[1.08] text-[#fbfcfe] sm:text-[44px]">
-          {t.services.title} <span className="text-[#e9b872]">{t.services.titleHighlight}</span> {t.services.titleSuffix}.
+          {t.services.title} <span className="text-[#e9b872]">{t.services.titleHighlight}</span>{t.services.titleSuffix ? ` ${t.services.titleSuffix}` : ''}
         </h2>
         <p className="mb-11 text-[16px] text-[#92a1bc]">{t.services.subtitle}</p>
         <div className="flex flex-col gap-[18px]">
-          {t.services.items.map((o, i) => (
+          {t.services.items.map((o) => (
             <motion.div
               key={o.title}
               variants={reveal}
@@ -197,23 +238,12 @@ function Services() {
                   </div>
                 ))}
               </div>
-              <div className="flex flex-col items-stretch gap-2.5 self-center">
-                {/* The quality platform is licensed: it also offers a quote. */}
-                {i === 0 && (
-                  <a
-                    href="#quote"
-                    className="flex items-center justify-center gap-1.5 whitespace-nowrap rounded-[10px] bg-[#e9b872] px-[18px] py-[11px] text-[14px] font-semibold text-[#0a1628] no-underline transition-colors hover:bg-[#f3c685]"
-                  >
-                    {t.quote.nav} <ArrowRight size={15} />
-                  </a>
-                )}
-                <a
-                  href="#contact"
-                  className="flex items-center justify-center gap-1.5 whitespace-nowrap rounded-[10px] border border-white/[.16] px-[18px] py-[11px] text-[14px] font-semibold text-[#dfe7f4] no-underline transition-colors hover:border-[#e9b872] hover:text-[#e9b872]"
-                >
-                  {o.cta} <ArrowRight size={15} />
-                </a>
-              </div>
+              <a
+                href="#contact"
+                className="flex items-center justify-center gap-1.5 self-center whitespace-nowrap rounded-[10px] border border-white/[.16] px-[18px] py-[11px] text-[14px] font-semibold text-[#dfe7f4] no-underline transition-colors hover:border-[#e9b872] hover:text-[#e9b872]"
+              >
+                {o.cta} <ArrowRight size={15} />
+              </a>
             </motion.div>
           ))}
         </div>
@@ -311,7 +341,8 @@ function Home() {
   return (
     <>
       <Hero />
-      <About />
+      <Platform />
+      <HowItWorks />
       <Services />
       <WhyChoose />
       <ContactSection />

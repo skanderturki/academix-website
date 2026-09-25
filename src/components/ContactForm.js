@@ -14,11 +14,12 @@ function ContactForm() {
   const { t } = useLanguage();
   const f = t.contact.form;
 
+  // The first option is the online demo, the main reason people write.
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     organization: '',
-    serviceType: '',
+    serviceType: f.serviceOptions[0],
     message: '',
   });
   const [error, setError] = useState('');
@@ -68,7 +69,7 @@ function ContactForm() {
       }
 
       setSuccess(true);
-      setFormData({ name: '', email: '', organization: '', serviceType: '', message: '' });
+      setFormData({ name: '', email: '', organization: '', serviceType: f.serviceOptions[0], message: '' });
     } catch (err) {
       setError(err.message || f.errors.generic);
     } finally {

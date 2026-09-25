@@ -454,7 +454,12 @@ app.get('/api/stats', (req, res) => {
 
 // Serve the CRA build
 const buildPath = path.join(__dirname, 'build');
-app.use(express.static(buildPath));
+// CRA names every file under /static with a content hash, so a changed file
+// always gets a new URL: cache those for a year. Everything else (index.html,
+// the logo, the social image) is revalidated on each visit so a release shows
+// up at once.
+app.use('/static', express.static(path.join(buildPath, 'static'), { immutable: true, maxAge: '365d' }));
+app.use(express.static(buildPath, { maxAge: 0 }));
 
 // SPA fallback: any non-API route returns index.html
 app.get('*', (req, res) => {

@@ -2,9 +2,9 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 /**
- * OutcomeMap — the CLO → PLO "outcome mapping / audit-trail" motif used in the
- * hero. Visually represents what Academix sells: structured, auditable evidence
- * linking course outcomes to programme outcomes.
+ * OutcomeMap — the CLO → SO "outcome mapping / audit-trail" motif used in the
+ * hero: auditable evidence linking course learning outcomes to ABET Student
+ * Outcomes.
  */
 export default function OutcomeMap({ accent = '#e9b872' }) {
   const W = 380;
@@ -63,7 +63,7 @@ export default function OutcomeMap({ accent = '#e9b872' }) {
             transition={{ duration: 2.4, repeat: Infinity, delay: 0.6 + j * 0.3 }}
           />
           <text x={rx + 10} y={y + 3.5} textAnchor="start" fill="#9fb0cc" fontSize={9} className="font-mono">
-            {`PLO${j + 1}`}
+            {`SO${j + 1}`}
           </text>
         </g>
       ))}
