@@ -195,8 +195,8 @@ function App() {
             </div>
             <ul className="flex flex-col gap-2.5 text-[14px]">
               <li>
-                <a href="mailto:academix@jahiz.tn" className="inline-flex items-center gap-2 text-[#bcc8de] no-underline transition-colors hover:text-[#e9b872]">
-                  <Mail className="h-4 w-4" /> academix@jahiz.tn
+                <a href="mailto:contact@jahiz.tn" className="inline-flex items-center gap-2 text-[#bcc8de] no-underline transition-colors hover:text-[#e9b872]">
+                  <Mail className="h-4 w-4" /> contact@jahiz.tn
                 </a>
               </li>
               <li>

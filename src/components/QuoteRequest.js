@@ -8,7 +8,7 @@ import { cn } from '../lib/utils';
 // the Academix control plane (see quote.js). Nothing is paid here: the team
 // prices the request and emails the quote.
 
-const CONTACT_EMAIL = 'academix@jahiz.tn';
+const CONTACT_EMAIL = 'contact@jahiz.tn';
 
 const EMPTY = {
   customer: { institution: '', country: '', contactName: '', contactRole: '', contactEmail: '', contactPhone: '' },

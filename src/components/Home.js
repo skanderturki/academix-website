@@ -384,8 +384,8 @@ function ContactSection() {
               </span>
               <div>
                 <div className="font-mono text-xs text-[#8293af]">{t.contact.form.directIntro}</div>
-                <a href="mailto:academix@jahiz.tn" className="text-[15px] font-semibold text-[#eef3fb] no-underline hover:text-[#e9b872]">
-                  academix@jahiz.tn
+                <a href="mailto:contact@jahiz.tn" className="text-[15px] font-semibold text-[#eef3fb] no-underline hover:text-[#e9b872]">
+                  contact@jahiz.tn
                 </a>
               </div>
             </div>

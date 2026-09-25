@@ -8,7 +8,7 @@ import { Alert, AlertDescription } from './ui/alert';
 import { useLanguage } from '../contexts/LanguageContext';
 import { cn } from '../lib/utils';
 
-const CONTACT_EMAIL = 'academix@jahiz.tn';
+const CONTACT_EMAIL = 'contact@jahiz.tn';
 
 function ContactForm() {
   const { t } = useLanguage();
