@@ -92,7 +92,7 @@ export const content = {
             'Document generation (transcripts, certificates, reports)',
             'AI-assisted content and grading workflows',
           ],
-          cta: 'Explore Our n8n Server',
+          cta: 'Automate a process',
         },
         {
           badge: 'AI for Academia',
@@ -309,7 +309,7 @@ export const content = {
             'Génération de documents (relevés, attestations, rapports)',
             'Flux de contenu et de notation assistés par IA',
           ],
-          cta: 'Découvrir notre serveur n8n',
+          cta: 'Automatiser un processus',
         },
         {
           badge: 'IA pour l’enseignement',

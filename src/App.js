@@ -103,14 +103,6 @@ function App() {
             ))}
             {isAuthenticated && (
               <>
-                <a
-                  href="https://n8n.academix.tn"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[14.5px] font-medium text-[#aebbd2] no-underline transition-colors hover:text-white"
-                >
-                  {t.nav.n8n}
-                </a>
                 <button
                   type="button"
                   onClick={handleLogout}
@@ -165,15 +157,6 @@ function App() {
             ))}
             {isAuthenticated && (
               <>
-                <a
-                  href="https://n8n.academix.tn"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => setMobileOpen(false)}
-                  className="rounded-lg px-4 py-3 text-sm font-medium text-white/90 hover:bg-white/10"
-                >
-                  {t.nav.n8n}
-                </a>
                 <button
                   type="button"
                   onClick={handleLogout}
@@ -230,11 +213,6 @@ function App() {
               <li>
                 <a href="https://pmp.academix.tn" target="_blank" rel="noopener noreferrer" className="text-[#bcc8de] no-underline transition-colors hover:text-[#e9b872]">
                   {t.footer.links.pmp}
-                </a>
-              </li>
-              <li>
-                <a href="https://n8n.academix.tn" target="_blank" rel="noopener noreferrer" className="text-[#bcc8de] no-underline transition-colors hover:text-[#e9b872]">
-                  {t.footer.links.n8n}
                 </a>
               </li>
               <li>

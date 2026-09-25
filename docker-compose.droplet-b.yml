@@ -1,6 +1,6 @@
 # =============================================================================
 # Droplet B — 165.232.175.224  (heavier: prototypes)
-# Adds pmp / gallery ALONGSIDE the existing bacinfo
+# Adds jahiz.tn / academix.tn / pmp / gallery ALONGSIDE the existing bacinfo
 # stack, behind bacinfo's **Caddy** (which already owns :80/:443 and does
 # automatic Let's Encrypt). No host ports, no certbot.
 # =============================================================================
@@ -9,7 +9,8 @@
 #   - bacinfo runs its own compose at /home/bacinfo/bacinfo (caddy + web +
 #     meilisearch) on docker network `bacinfo_app`.
 #   - These services join that network (declared `edge`, external) so Caddy can
-#     reverse_proxy to them BY NAME (pmp:3002, gallery:3001).
+#     reverse_proxy to them BY NAME (jahiz:3000, academix:3000, pmp:3002,
+#     gallery:3001).
 #   - Add the matching site blocks to bacinfo's Caddyfile (see
 #     deploy/caddy/academix-apps.caddy), then reload Caddy.
 #
@@ -25,7 +26,7 @@
 # container can't starve bacinfo. Add swap before `up -d`:
 #   fallocate -l 4G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile
 #   echo '/swapfile none swap sw 0 0' >> /etc/fstab
-# PMP -> MongoDB Atlas; gallery -> SQLite. (quality.academix.tn and its local
+# PMP -> MongoDB Atlas; gallery and the two marketing sites -> SQLite. (quality.academix.tn and its local
 # Mongo were retired in 2026-09.)
 # =============================================================================
 
@@ -70,9 +71,10 @@ services:
       ADMIN_EMAIL: ${NADART_ADMIN_EMAIL:?set NADART_ADMIN_EMAIL in .env.droplet-b}
       ADMIN_PASSWORD: ${NADART_ADMIN_PASSWORD:?set NADART_ADMIN_PASSWORD in .env.droplet-b}
       GOOGLE_CLIENT_ID: ${NADART_GOOGLE_CLIENT_ID:-}
-      N8N_WEBHOOK_URL: https://n8n.academix.tn/webhook/contact
-      N8N_AUTH_USER: ${NADART_N8N_AUTH_USER:-nadart}
-      N8N_AUTH_PASSWORD: ${NADART_N8N_AUTH_PASSWORD:-}
+      # Contact form -> Resend email to the gallery owner (ADMIN_EMAIL unless set).
+      RESEND_API_KEY: ${NADART_RESEND_API_KEY:-}
+      RESEND_FROM: ${NADART_RESEND_FROM:-NadArt Gallery <gallery@jahiz.tn>}
+      CONTACT_TO_EMAIL: ${NADART_CONTACT_TO_EMAIL:-}
       MAX_FILE_SIZE: "10485760"
       UPLOAD_DIR: /app/resources/galleries
     volumes:
@@ -80,7 +82,75 @@ services:
       - ./mygalery/nadart_evo/resources:/app/resources
     networks: [edge]   # SQLite, no Mongo — only needs Caddy reachability
 
+  # --- jahiz.tn — corporate marketing site (jahiz_main repo) ----------------
+  # Images are built off-box and loaded (docker save | ssh … docker load), so the
+  # droplet needs neither a GHCR login nor the jahiz_main checkout; `build:` is
+  # for local builds only. Deploy with `up -d --no-build`.
+  jahiz:
+    build:
+      context: ../jahiz_main
+      dockerfile: Dockerfile
+    image: ghcr.io/skanderturki/jahiz-site:latest
+    restart: always
+    mem_limit: 256m
+    expose:
+      - "3000"
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      RESEND_API_KEY: ${JAHIZ_RESEND_API_KEY:-}
+      RESEND_FROM: ${JAHIZ_RESEND_FROM:-Jahiz <noreply@jahiz.tn>}
+      CONTACT_TO_EMAIL: ${JAHIZ_CONTACT_TO_EMAIL:-contact@jahiz.tn}
+      SITE_USERNAME: ${JAHIZ_SITE_USERNAME:-preview}
+      SITE_PASSWORD: ${JAHIZ_SITE_PASSWORD:-}
+      # First-party analytics (embedded SQLite on the volume below).
+      ANALYTICS_DB: /app/data/analytics.db
+      ANALYTICS_TOKEN: ${JAHIZ_ANALYTICS_TOKEN:-}
+      # Unified analytics dashboard at jahiz.tn/admin (disabled until password set).
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      # Reads academix.tn's stats by service name on the shared network.
+      ACADEMIX_STATS_URL: http://academix:3000/api/stats
+      ACADEMIX_STATS_TOKEN: ${MAIN_ANALYTICS_TOKEN:-}
+    volumes:
+      - jahiz-analytics:/app/data
+    networks: [edge]
+
+  # --- academix.tn — marketing site (this repo) ------------------------------
+  academix:
+    build:
+      context: .
+      dockerfile: dockerfile
+    image: ghcr.io/skanderturki/academix-site:latest
+    restart: always
+    mem_limit: 256m
+    expose:
+      - "3000"
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      RESEND_API_KEY: ${MAIN_RESEND_API_KEY:-}
+      RESEND_FROM: ${MAIN_RESEND_FROM:-Academix <academix@jahiz.tn>}
+      CONTACT_TO_EMAIL: ${MAIN_CONTACT_TO_EMAIL:-academix@jahiz.tn}
+      # "Request a quote" relay to the platform's control plane (quote.js). The
+      # secret must equal ORDER_INTAKE_SECRET on the platform server, and the
+      # platform's INTAKE_ALLOWED_IPS must list this droplet (165.232.175.224).
+      ORDER_INTAKE_SECRET: ${MAIN_ORDER_INTAKE_SECRET:-}
+      ORDER_INTAKE_URL: ${MAIN_ORDER_INTAKE_URL:-https://admin.academix.tn/api/cp/intake/orders}
+      SITE_USERNAME: ${MAIN_SITE_USERNAME:-preview}
+      SITE_PASSWORD: ${MAIN_SITE_PASSWORD:-}
+      ANALYTICS_DB: /app/data/analytics.db
+      ANALYTICS_TOKEN: ${MAIN_ANALYTICS_TOKEN:-}
+    volumes:
+      - academix-analytics:/app/data
+    networks: [edge]
+
   # bacinfo — already runs in its own compose (/home/bacinfo/bacinfo). Not here.
+
+volumes:
+  # Analytics SQLite DBs (pageviews + clicks) for the two marketing sites.
+  jahiz-analytics:
+  academix-analytics:
 
 networks:
   # bacinfo's Caddy network — Caddy reverse_proxies to our services by name on it.

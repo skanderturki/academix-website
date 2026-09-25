@@ -38,6 +38,14 @@ const authLimiter = rateLimit({
   message: { message: 'Too many attempts. Please try again later.' },
 })
 
+// The contact form emails the gallery owner through Resend, whose quota is
+// shared with every Jahiz site: 5 messages per 15 minutes per visitor.
+const contactLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: { message: 'Too many messages. Please try again later.' },
+})
+
 // Static file serving for gallery images
 const resourcesPath = path.join(__dirname, '../../resources/galleries')
 app.use('/galleries', express.static(resourcesPath))
@@ -47,7 +55,7 @@ app.use('/api/auth', authLimiter, authRoutes)
 app.use('/api/galleries', galleriesRoutes)
 app.use('/api/paintings', paintingsRoutes)
 app.use('/api/resume', resumeRoutes)
-app.use('/api/contact', contactRoutes)
+app.use('/api/contact', contactLimiter, contactRoutes)
 
 // Serve React app in production
 if (process.env.NODE_ENV === 'production') {
