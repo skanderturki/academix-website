@@ -42,7 +42,7 @@ Create React App boilerplate and can be ignored.) See the workspace-root
 | `src/components/ui/*` | shadcn-style primitives (button/card/input/label/textarea/alert) |
 | `server.js` | Express + Resend + rate limit + Basic-Auth gate + SPA fallback |
 | `Dockerfile` | Multi-stage CRA build → slim Node runtime serving `build/` |
-| `docker-compose.yml` | Multi-app orchestration (see below) |
+| `docker-compose.droplet-b.yml` | Production services on droplet B (see Deployment) |
 
 ## Sibling apps in this repo
 
@@ -50,27 +50,43 @@ This repo also contains other deployable apps, each its own sub-project:
 `PMP website/`, `academic_quality_generic/`, `mygalery/nadart_evo/`, `aichat/`,
 `curriculum-modeler/`, `student-advisor/`. Treat them as separate codebases.
 
-> **`academic_quality_generic/`** (the Academic Quality Platform) is part of
-> academix but does **not** deploy via the droplet / docker-compose recipe below
-> — its primary deployment is **Render** (`render.yaml`), with a single-container
-> droplet demo at `demo.quality.academix.tn`. See its own `CLAUDE.md`.
+> **`academic_quality_generic/`** (the Academic Quality prototype) is no longer
+> deployed anywhere: quality.academix.tn was retired on 2026-09-25. The product
+> is `d:/jahiz/abet_quality` (admin.academix.tn and the customer platforms).
 
-## Deployment (droplet + system nginx)
+## Deployment (droplet B + Caddy)
 
-`docker-compose.yml` runs each app as a container bound to a host port; the
-droplet's **system nginx** (TLS via Let's Encrypt) reverse-proxies each subdomain
-to its port. The in-compose nginx service is intentionally disabled.
+Everything public from this repo runs on **droplet B (165.232.175.224,
+DigitalOcean SGP1)** from `docker-compose.droplet-b.yml`, with settings in
+`.env.droplet-b` (see `.env.droplet-b.example`), checked out at
+`/opt/jahiz/academix-website`:
 
-| Service | Host port | Subdomain |
-|---------|-----------|-----------|
-| `react-app` (this site) | 3000 | `academix.tn` (apex) |
-| `nadart-evo` | 3001 | (gallery) |
-| `pmp-website` | 3002 | `pmp.academix.tn` |
-| `n8n` | 5678 | `n8n.academix.tn` |
+| Service | Container port | Domain |
+|---------|----------------|--------|
+| `academix` (this site) | 3000 | `academix.tn` (www redirects) |
+| `jahiz` (the `jahiz_main` repo) | 3000 | `jahiz.tn` (www redirects) |
+| `pmp` | 3002 | `pmp.academix.tn` |
+| `gallery` (nadart-evo) | 3001 | `gallery.jahiz.tn` |
 
-Env vars are namespaced (`MAIN_*`, `PMP_*`, `NADART_*`) — see `.env.example`.
-New subdomains follow the same recipe: container on a free port + nginx server
-block + certbot cert + DNS record (DNS is on OVHcloud).
+bacinfo's **Caddy** (`/home/bacinfo/bacinfo`, repo `skanderturki/bacinfo`) is the
+only public entry point and obtains Let's Encrypt certificates automatically;
+the site blocks live in bacinfo's `Caddyfile` and reach these containers by
+service name on the shared `bacinfo_app` network (no host ports). After a
+Caddyfile pull, `docker restart bacinfo-caddy-1` (it is a single-file mount).
+
+Images are built off the droplet and loaded over SSH (the droplet has no GHCR
+login and 2 GB of RAM is too little for CRA builds):
+
+```bash
+docker build --platform linux/amd64 -f Dockerfile -t ghcr.io/skanderturki/academix-site:latest .
+docker save ghcr.io/skanderturki/academix-site:latest | gzip -1 | ssh droplet-b 'gunzip | docker load'
+ssh droplet-b 'cd /opt/jahiz/academix-website && git pull && docker compose -f docker-compose.droplet-b.yml --env-file .env.droplet-b up -d --no-build academix'
+```
+
+History: droplet A (178.128.51.137: jahiz.tn, academix.tn, n8n.academix.tn behind
+system nginx) was destroyed on 2026-09-25 and n8n retired with it; the two sites
+moved to droplet B. quality.academix.tn (the Academic Quality prototype) was
+retired the same day. DNS for all domains is on OVHcloud.
 
 ## Local commands
 
