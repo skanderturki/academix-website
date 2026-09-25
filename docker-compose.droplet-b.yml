@@ -1,6 +1,6 @@
 # =============================================================================
 # Droplet B — 165.232.175.224  (heavier: prototypes)
-# Adds pmp / quality / gallery + a shared Mongo ALONGSIDE the existing bacinfo
+# Adds pmp / gallery ALONGSIDE the existing bacinfo
 # stack, behind bacinfo's **Caddy** (which already owns :80/:443 and does
 # automatic Let's Encrypt). No host ports, no certbot.
 # =============================================================================
@@ -9,15 +9,12 @@
 #   - bacinfo runs its own compose at /home/bacinfo/bacinfo (caddy + web +
 #     meilisearch) on docker network `bacinfo_app`.
 #   - These services join that network (declared `edge`, external) so Caddy can
-#     reverse_proxy to them BY NAME (pmp:3002, quality:5000, gallery:3001).
+#     reverse_proxy to them BY NAME (pmp:3002, gallery:3001).
 #   - Add the matching site blocks to bacinfo's Caddyfile (see
 #     deploy/caddy/academix-apps.caddy), then reload Caddy.
-#   - Mongo is on a private `internal` network only — never reachable by Caddy
-#     or the host.
 #
 # Layout on the droplet (run from the academix-website checkout):
 #   /opt/jahiz/academix-website/                   <- this repo + this file
-#   /opt/jahiz/academic-quality-universities/      <- sibling checkout (quality build)
 #
 #   # confirm the external network name first:
 #   docker network ls | grep app        # expect: bacinfo_app
@@ -28,27 +25,13 @@
 # container can't starve bacinfo. Add swap before `up -d`:
 #   fallocate -l 4G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile
 #   echo '/swapfile none swap sw 0 0' >> /etc/fstab
-# Only `quality` uses the local Mongo; PMP -> Atlas; gallery -> SQLite.
+# PMP -> MongoDB Atlas; gallery -> SQLite. (quality.academix.tn and its local
+# Mongo were retired in 2026-09.)
 # =============================================================================
 
 name: jahiz-droplet-b
 
 services:
-  # Local Mongo — serves ONLY quality (psu-quality). PMP stays on Atlas.
-  mongo:
-    image: mongo:7
-    restart: always
-    mem_limit: 512m
-    volumes:
-      - mongo-data:/data/db
-    healthcheck:
-      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
-      interval: 15s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
-    networks: [internal]
-
   pmp:
     build:
       context: ./PMP website
@@ -68,38 +51,6 @@ services:
       RESEND_API_KEY: ${PMP_RESEND_API_KEY:-}
       RESEND_FROM: ${PMP_RESEND_FROM:-PMP Learn <pmp@jahiz.tn>}
     networks: [edge]
-
-  quality:
-    build:
-      context: ../academic-quality-universities
-      dockerfile: Dockerfile
-    image: ghcr.io/skanderturki/academic-quality:latest
-    restart: always
-    mem_limit: 640m
-    expose:
-      - "5000"
-    environment:
-      NODE_ENV: production
-      PORT: "5000"
-      MONGODB_URI: mongodb://mongo:27017/psu-quality
-      JWT_SECRET: ${QUALITY_JWT_SECRET:?set QUALITY_JWT_SECRET in .env.droplet-b}
-      ADMIN_EMAIL: ${QUALITY_ADMIN_EMAIL:?set QUALITY_ADMIN_EMAIL in .env.droplet-b}
-      ADMIN_PASSWORD: ${QUALITY_ADMIN_PASSWORD:?set QUALITY_ADMIN_PASSWORD in .env.droplet-b}
-      CLIENT_URL: ${QUALITY_CLIENT_URL:-https://quality.academix.tn}
-      SMTP_HOST: ${QUALITY_SMTP_HOST:-}
-      SMTP_PORT: ${QUALITY_SMTP_PORT:-587}
-      SMTP_USER: ${QUALITY_SMTP_USER:-}
-      SMTP_PASS: ${QUALITY_SMTP_PASS:-}
-      SMTP_FROM: ${QUALITY_SMTP_FROM:-}
-      SMTP_SECURE: ${QUALITY_SMTP_SECURE:-false}
-      GEMINI_API_KEY: ${QUALITY_GEMINI_API_KEY:-}
-      BACKUP_DIR: /app/server/backups
-    volumes:
-      - quality-backups:/app/server/backups
-    depends_on:
-      mongo:
-        condition: service_healthy
-    networks: [internal, edge]
 
   gallery:
     build:
@@ -138,9 +89,3 @@ networks:
   edge:
     external: true
     name: bacinfo_app
-  internal:
-    driver: bridge
-
-volumes:
-  mongo-data:
-  quality-backups:
