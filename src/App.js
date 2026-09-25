@@ -4,6 +4,7 @@ import Home from './components/Home';
 import Login from './components/Login';
 import Register from './components/Register';
 import Portfolio from './components/Portfolio';
+import QuoteRequest from './components/QuoteRequest';
 import { useAuth } from './contexts/AuthContext';
 import { useLanguage } from './contexts/LanguageContext';
 import { initAnalytics } from './lib/analytics';
@@ -33,8 +34,9 @@ function App() {
     const handleHashChange = () => {
       const hash = window.location.hash.slice(1) || 'home';
       const view = hash.split('#')[0].split('/')[0];
-      setCurrentView(['home', 'login', 'register', 'portfolio'].includes(view) ? view : 'home');
+      setCurrentView(['home', 'login', 'register', 'portfolio', 'quote'].includes(view) ? view : 'home');
       setMobileOpen(false);
+      if (view === 'quote') window.scrollTo(0, 0);
     };
     handleHashChange();
     window.addEventListener('hashchange', handleHashChange);
@@ -124,10 +126,10 @@ function App() {
           <div className="flex items-center gap-3">
             <LangToggle className="hidden sm:inline-flex" />
             <a
-              href="#contact"
+              href="#quote"
               className="hidden rounded-[9px] bg-[#e9b872] px-[18px] py-[10px] text-sm font-semibold text-[#0a1628] no-underline shadow-[0_6px_18px_rgba(233,184,114,.25)] transition-colors hover:bg-[#f3c685] md:inline-block"
             >
-              {t.hero.ctaSecondary}
+              {t.quote.nav}
             </a>
             <button
               type="button"
@@ -181,6 +183,13 @@ function App() {
                 </button>
               </>
             )}
+            <a
+              href="#quote"
+              onClick={() => setMobileOpen(false)}
+              className="mx-4 my-2 rounded-[9px] bg-[#e9b872] px-4 py-3 text-center text-sm font-semibold text-[#0a1628] no-underline"
+            >
+              {t.quote.nav}
+            </a>
             <div className="px-4 py-3">
               <LangToggle />
             </div>
@@ -195,6 +204,8 @@ function App() {
           <Register />
         ) : currentView === 'portfolio' ? (
           <Portfolio />
+        ) : currentView === 'quote' ? (
+          <QuoteRequest />
         ) : (
           <Home />
         )}

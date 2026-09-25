@@ -79,6 +79,11 @@ services:
       RESEND_API_KEY: ${MAIN_RESEND_API_KEY:-}
       RESEND_FROM: ${MAIN_RESEND_FROM:-Academix <academix@jahiz.tn>}
       CONTACT_TO_EMAIL: ${MAIN_CONTACT_TO_EMAIL:-academix@jahiz.tn}
+      # "Request a quote" relay to the platform's control plane (quote.js). The
+      # secret must equal ORDER_INTAKE_SECRET on the platform server; unset =
+      # the quote form answers "unavailable".
+      ORDER_INTAKE_SECRET: ${MAIN_ORDER_INTAKE_SECRET:-}
+      ORDER_INTAKE_URL: ${MAIN_ORDER_INTAKE_URL:-https://admin.academix.tn/api/cp/intake/orders}
       SITE_USERNAME: ${MAIN_SITE_USERNAME:-preview}
       SITE_PASSWORD: ${MAIN_SITE_PASSWORD:-}
       # First-party analytics (embedded SQLite on the volume below).

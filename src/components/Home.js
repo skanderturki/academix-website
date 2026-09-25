@@ -175,7 +175,7 @@ function Services() {
         </h2>
         <p className="mb-11 text-[16px] text-[#92a1bc]">{t.services.subtitle}</p>
         <div className="flex flex-col gap-[18px]">
-          {t.services.items.map((o) => (
+          {t.services.items.map((o, i) => (
             <motion.div
               key={o.title}
               variants={reveal}
@@ -197,12 +197,23 @@ function Services() {
                   </div>
                 ))}
               </div>
-              <a
-                href="#contact"
-                className="flex items-center gap-1.5 self-center whitespace-nowrap rounded-[10px] border border-white/[.16] px-[18px] py-[11px] text-[14px] font-semibold text-[#dfe7f4] no-underline transition-colors hover:border-[#e9b872] hover:text-[#e9b872]"
-              >
-                {o.cta} <ArrowRight size={15} />
-              </a>
+              <div className="flex flex-col items-stretch gap-2.5 self-center">
+                {/* The quality platform is licensed: it also offers a quote. */}
+                {i === 0 && (
+                  <a
+                    href="#quote"
+                    className="flex items-center justify-center gap-1.5 whitespace-nowrap rounded-[10px] bg-[#e9b872] px-[18px] py-[11px] text-[14px] font-semibold text-[#0a1628] no-underline transition-colors hover:bg-[#f3c685]"
+                  >
+                    {t.quote.nav} <ArrowRight size={15} />
+                  </a>
+                )}
+                <a
+                  href="#contact"
+                  className="flex items-center justify-center gap-1.5 whitespace-nowrap rounded-[10px] border border-white/[.16] px-[18px] py-[11px] text-[14px] font-semibold text-[#dfe7f4] no-underline transition-colors hover:border-[#e9b872] hover:text-[#e9b872]"
+                >
+                  {o.cta} <ArrowRight size={15} />
+                </a>
+              </div>
             </motion.div>
           ))}
         </div>

@@ -274,6 +274,25 @@ app.post('/api/contact', contactLimiter, async (req, res) => {
   }
 });
 
+// "Request a quote" for an Academix license — checked here, relayed signed to
+// the platform's control plane (see quote.js). 5 requests per hour per IP.
+const quoteLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'rate_limited' },
+});
+require('./quote').mountQuote(app, {
+  resend,
+  from: RESEND_FROM,
+  teamEmail: CONTACT_TO_EMAIL,
+  limiter: quoteLimiter,
+  recordEvent,
+  intakeUrl: process.env.ORDER_INTAKE_URL,
+  intakeSecret: process.env.ORDER_INTAKE_SECRET,
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });

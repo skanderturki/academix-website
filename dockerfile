@@ -28,6 +28,7 @@ WORKDIR /app
 # Copy build output + server entrypoint
 COPY --from=build /app/build ./build
 COPY --from=build /app/server.js ./server.js
+COPY --from=build /app/quote.js ./quote.js
 COPY --from=build /app/package.json /app/package-lock.json ./
 
 # Install production dependencies only. better-sqlite3 installs its prebuilt

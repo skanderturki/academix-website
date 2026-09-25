@@ -18,12 +18,13 @@ Create React App boilerplate and can be ignored.) See the workspace-root
 ## Stack
 
 - **Frontend**: React 18 (Create React App), Tailwind CSS 3, framer-motion,
-  lucide-react, Radix UI primitives. Dark navy + steel-blue brand palette defined
-  in `tailwind.config.js` under `theme.extend.colors.brand` (deep/navy/blue/steel/
-  light/glow). Design-system helpers (`.bg-mesh-*`, `.grid-overlay`,
-  `.text-gradient-brand`, animations) live in `src/index.css` + `tailwind.config.js`.
+  lucide-react, Radix UI primitives. The 2026 redesign: deep navy + gold
+  (`#060e1c` ground, `#e9b872` accent; `navy`/`gold`/`steel` in
+  `tailwind.config.js`), Instrument Serif for display, Hanken Grotesk for text,
+  IBM Plex Mono for eyebrows and data. Bilingual EN/FR: every public string lives
+  in `src/i18n/content.js`, read through `useLanguage()`.
 - **Backend**: `server.js` — Express serving the CRA `build/` with a `/api/contact`
-  endpoint (Resend email), `express-rate-limit`, an optional HTTP Basic-Auth
+  endpoint (Resend email), `/api/quote` (see "License quotes" below), `express-rate-limit`, an optional HTTP Basic-Auth
   preview gate (`SITE_PASSWORD`), constant-time auth compare, and SPA fallback.
 - **Email**: Resend (`RESEND_API_KEY`, `RESEND_FROM`, `CONTACT_TO_EMAIL`).
 
@@ -34,6 +35,8 @@ Create React App boilerplate and can be ignored.) See the workspace-root
 | `src/App.js` | Header (mesh banner + sticky nav), footer, hash-based view routing |
 | `src/components/Home.js` | Hero/About/Services/WhyChoose/Contact; `GridGlowBackground` canvas + `fadeUp` motion variants |
 | `src/components/ContactForm.js` | Resend-backed contact form (name/email/org/serviceType/message) |
+| `src/components/QuoteRequest.js` | `#quote`: "Request a quote" for an Academix licence (header CTA; also on the quality-platform service card) |
+| `quote.js` | `POST /api/quote`: validates, relays the request signed to the platform's control plane, emails the customer a confirmation; `tests/quote.test.js` (`npm run test:server`) |
 | `src/components/{Login,Register,Portfolio}.js` | Auth views + portfolio |
 | `src/contexts/AuthContext.js` | Client auth state |
 | `src/components/ui/*` | shadcn-style primitives (button/card/input/label/textarea/alert) |
@@ -77,11 +80,28 @@ npm run build      # production build -> build/
 npm run serve      # node server.js (serves build/ + /api/contact)
 ```
 
+## License quotes (academix.tn → admin.academix.tn)
+
+The site keeps nothing. `quote.js` relays each request to the platform's
+control plane (`ORDER_INTAKE_URL`, default
+`https://admin.academix.tn/api/cp/intake/orders`, in the abet_quality repo),
+signed with `ORDER_INTAKE_SECRET` (`MAIN_ORDER_INTAKE_SECRET` in
+`.env.droplet-a`; the same value as `ORDER_INTAKE_SECRET` on the platform
+server): header `X-Academix-Signature: t=<unix>,v1=<hex HMAC-SHA256 of
+"<t>.<body>">`. The platform also only accepts the relay from this server's IP
+(`INTAKE_ALLOWED_IPS` there). Operators price, invoice and activate the order in
+the control plane, which sends the quote and welcome emails; this site only
+sends the "request received" confirmation. If the platform can't be reached the
+whole request is emailed to `CONTACT_TO_EMAIL` so nothing is lost. The field
+rules in `quote.js` mirror `server/routes/orderIntake.js` in abet_quality: change
+both together. A `website` honeypot field silently drops bots; 5 requests per
+hour per IP.
+
 ## Conventions
 
 - Keep new UI in the existing brand palette + design-system helpers; match the
   dark, glassy, mesh-gradient aesthetic already established in `Home.js`/`index.css`.
-- All marketing copy is inline in the components (this site is English; not i18n'd).
+- All marketing copy lives in `src/i18n/content.js`, in English and French; keep both in step.
 - Don't commit secrets — Resend key and gate password come from env / `.env`.
 
 ## Session history (distilled)
