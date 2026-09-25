@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Menu, X, GraduationCap, Workflow, Bot, Mail, Languages } from 'lucide-react';
+import { Menu, X, Mail, Languages } from 'lucide-react';
 import Home from './components/Home';
 import Login from './components/Login';
 import Register from './components/Register';
@@ -10,14 +10,7 @@ import { initAnalytics } from './lib/analytics';
 import { cn } from './lib/utils';
 
 function BrandLogo({ className }) {
-  return (
-    <img
-      src="/logo.png"
-      alt="Academix"
-      className={className}
-      draggable={false}
-    />
-  );
+  return <img src="/logo.png" alt="Academix" className={className} draggable={false} />;
 }
 
 // LinkedIn glyph (lucide dropped brand marks, so it's inlined).
@@ -29,9 +22,6 @@ function LinkedInIcon({ className }) {
   );
 }
 
-// Positional — index-aligned with content.featureChips.
-const FEATURE_CHIP_ICONS = [GraduationCap, Workflow, Bot];
-
 function App() {
   const { isAuthenticated, logout } = useAuth();
   const { t, lang, toggleLang } = useLanguage();
@@ -39,29 +29,20 @@ function App() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    // Handle hash-based routing
+    // Hash-based routing for the top-level views (sections stay on home).
     const handleHashChange = () => {
       const hash = window.location.hash.slice(1) || 'home';
-      // Strip any section-anchor portion; we only route on top-level views
       const view = hash.split('#')[0].split('/')[0];
-      if (['home', 'login', 'register', 'portfolio'].includes(view)) {
-        setCurrentView(view);
-      } else {
-        // It's a section anchor like #about/#services/#contact — stay on home
-        setCurrentView('home');
-      }
+      setCurrentView(['home', 'login', 'register', 'portfolio'].includes(view) ? view : 'home');
       setMobileOpen(false);
     };
-
     handleHashChange();
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
   // First-party analytics: pageviews + clicks -> /api/track (embedded SQLite).
-  useEffect(() => {
-    initAnalytics();
-  }, []);
+  useEffect(() => { initAnalytics(); }, []);
 
   const handleLogout = () => {
     logout();
@@ -83,182 +64,128 @@ function App() {
       onClick={toggleLang}
       aria-label={t.nav.switchLabel}
       className={cn(
-        'inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-sm font-medium text-white/85 transition hover:bg-white/10 hover:border-white/30',
+        'inline-flex items-center gap-2 rounded-[9px] border border-white/15 bg-white/[.04] px-3 py-1.5 text-sm font-medium text-[#aebbd2] transition hover:border-[#e9b872]/50 hover:text-white',
         className
       )}
     >
-      <Languages className="h-4 w-4 text-brand-steel" />
-      <span className="tabular-nums uppercase tracking-wider">{lang}</span>
-      <span className="text-white/40">/</span>
+      <Languages className="h-4 w-4 text-[#e9b872]" />
+      <span className="font-mono uppercase tracking-wider">{lang}</span>
+      <span className="text-white/30">/</span>
       <span>{t.nav.switchTo}</span>
     </button>
   );
 
   return (
-    <div className="dark min-h-screen flex flex-col bg-background text-foreground">
-      <header className="sticky top-0 z-50">
-        {/* Banner with gradient mesh background */}
-        <div className="relative overflow-hidden bg-mesh-banner border-b border-white/10">
-          {/* Grid overlay */}
-          <div className="absolute inset-0 grid-overlay opacity-60 animate-grid-move" aria-hidden="true" />
+    <div className="dark min-h-screen flex flex-col bg-[#060e1c] text-[#eef3fb] font-sans antialiased">
+      {/* ===================== NAV ===================== */}
+      <header className="sticky top-0 z-50 border-b border-white/[.07] bg-[#060e1c]/70 backdrop-blur-xl">
+        <div className="container-page flex h-[74px] items-center justify-between gap-6">
+          {/* Brand */}
+          <a href="#home" className="flex items-center gap-3 no-underline">
+            <BrandLogo className="h-9 w-auto object-contain" />
+            <span className="font-serif text-[24px] tracking-[.3px] text-white">Academix</span>
+          </a>
 
-          {/* Floating glow orbs */}
-          <div
-            className="pointer-events-none absolute -top-24 -right-16 h-80 w-80 rounded-full bg-brand-navy/30 blur-3xl animate-float"
-            aria-hidden="true"
-          />
-          <div
-            className="pointer-events-none absolute -bottom-24 -left-10 h-64 w-64 rounded-full bg-brand-light/25 blur-3xl animate-float-reverse"
-            aria-hidden="true"
-          />
+          {/* Center links (desktop) */}
+          <nav className="hidden items-center gap-7 lg:flex">
+            {navLinks.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                target={link.external ? '_blank' : undefined}
+                rel={link.external ? 'noopener noreferrer' : undefined}
+                className="text-[14.5px] font-medium text-[#aebbd2] no-underline transition-colors hover:text-white"
+              >
+                {link.label}
+              </a>
+            ))}
+            {isAuthenticated && (
+              <>
+                <a
+                  href="https://n8n.academix.tn"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[14.5px] font-medium text-[#aebbd2] no-underline transition-colors hover:text-white"
+                >
+                  {t.nav.n8n}
+                </a>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="text-[14.5px] font-medium text-[#aebbd2] transition-colors hover:text-white"
+                >
+                  {t.nav.logout}
+                </button>
+              </>
+            )}
+          </nav>
 
-          {/* Binary scroll decoration */}
-          <div className="pointer-events-none absolute top-2 left-0 right-0 overflow-hidden">
-            <div className="font-mono text-[10px] tracking-[0.2em] text-white/15 whitespace-nowrap animate-binary-scroll">
-              01001000 01100101 01101100 01101100 01101111 00100000 01010011 01001011 01000001 00100000 01010011 01111001 01110011 01110100 01100101 01101101 01110011
-            </div>
-          </div>
-
-          <div className="container-page relative z-10 py-6 md:py-8">
-            <div className="flex flex-wrap items-center justify-between gap-5">
-              {/* Brand */}
-              <div className="flex items-center gap-4">
-                <div className="relative">
-                  <div
-                    className="absolute inset-0 rounded-full bg-brand-navy/40 blur-xl animate-glow"
-                    aria-hidden="true"
-                  />
-                  <BrandLogo className="relative h-14 w-auto sm:h-[72px] object-contain animate-pulse-slow drop-shadow-[0_4px_8px_rgba(0,0,0,0.3)] transition hover:scale-105 hover:rotate-3" />
-                </div>
-                <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold leading-tight tracking-tight text-white">
-                    Academix
-                  </h1>
-                  <p className="text-xs sm:text-sm text-white/80 mt-1">
-                    {t.banner.line1} <span className="text-white/40">|</span> {t.banner.line2}
-                  </p>
-                </div>
-              </div>
-
-              {/* Feature chips */}
-              <div className="hidden md:flex flex-wrap gap-2">
-                {t.featureChips.map((label, i) => {
-                  const Icon = FEATURE_CHIP_ICONS[i] || GraduationCap;
-                  return (
-                    <div
-                      key={label}
-                      className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 backdrop-blur px-3 py-1.5 text-xs font-medium text-white/90 transition hover:bg-white/20 hover:border-white/30 hover:-translate-y-0.5"
-                    >
-                      <Icon className="h-3.5 w-3.5 text-brand-steel" />
-                      <span>{label}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+          {/* Right: language + CTA + mobile toggle */}
+          <div className="flex items-center gap-3">
+            <LangToggle className="hidden sm:inline-flex" />
+            <a
+              href="#contact"
+              className="hidden rounded-[9px] bg-[#e9b872] px-[18px] py-[10px] text-sm font-semibold text-[#0a1628] no-underline shadow-[0_6px_18px_rgba(233,184,114,.25)] transition-colors hover:bg-[#f3c685] md:inline-block"
+            >
+              {t.hero.ctaSecondary}
+            </a>
+            <button
+              type="button"
+              aria-label="Toggle navigation menu"
+              aria-expanded={mobileOpen}
+              className="lg:hidden inline-flex h-10 w-10 items-center justify-center rounded-[9px] text-white/90 transition hover:bg-white/10"
+              onClick={() => setMobileOpen((v) => !v)}
+            >
+              {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
           </div>
         </div>
 
-        {/* Navbar */}
-        <nav className="relative border-b border-white/10 bg-brand-deep/80 backdrop-blur-lg supports-[backdrop-filter]:bg-brand-deep/60">
-          <div className="container-page flex h-14 items-center justify-between">
-
-            {/* Desktop nav */}
-            <div className="hidden lg:flex items-center gap-1">
-              {navLinks.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  target={link.external ? '_blank' : undefined}
-                  rel={link.external ? 'noopener noreferrer' : undefined}
-                  className="rounded-full px-4 py-2 text-sm font-medium text-white/80 transition hover:text-white hover:bg-white/10"
-                >
-                  {link.label}
-                </a>
-              ))}
-              {isAuthenticated && (
-                <>
-                  <a
-                    href="https://n8n.academix.tn"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="rounded-full px-4 py-2 text-sm font-medium text-white/80 transition hover:text-white hover:bg-white/10"
-                  >
-                    {t.nav.n8n}
-                  </a>
-                  <button
-                    type="button"
-                    onClick={handleLogout}
-                    className="rounded-full px-4 py-2 text-sm font-medium text-white/80 transition hover:text-white hover:bg-white/10"
-                  >
-                    {t.nav.logout}
-                  </button>
-                </>
-              )}
-            </div>
-
-            {/* Right side: language toggle + mobile toggle */}
-            <div className="flex items-center gap-2 lg:ml-auto">
-              <LangToggle className="hidden sm:inline-flex" />
-
-              <button
-                type="button"
-                aria-label="Toggle navigation menu"
-                aria-expanded={mobileOpen}
-                className="lg:hidden inline-flex h-10 w-10 items-center justify-center rounded-full text-white/90 hover:bg-white/10 transition"
-                onClick={() => setMobileOpen((v) => !v)}
+        {/* Mobile drawer */}
+        <div
+          className={cn(
+            'lg:hidden overflow-hidden border-t border-white/[.07] bg-[#060e1c]/95 backdrop-blur-xl transition-[max-height,opacity] duration-300',
+            mobileOpen ? 'max-h-[640px] opacity-100' : 'max-h-0 opacity-0'
+          )}
+        >
+          <div className="container-page py-3 flex flex-col gap-1">
+            {navLinks.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                target={link.external ? '_blank' : undefined}
+                rel={link.external ? 'noopener noreferrer' : undefined}
+                onClick={() => setMobileOpen(false)}
+                className="rounded-lg px-4 py-3 text-sm font-medium text-white/90 hover:bg-white/10"
               >
-                {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-              </button>
-            </div>
-          </div>
-
-          {/* Mobile nav drawer */}
-          <div
-            className={cn(
-              'lg:hidden overflow-hidden border-t border-white/10 bg-brand-deep/95 backdrop-blur-lg transition-[max-height,opacity] duration-300',
-              mobileOpen ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'
-            )}
-          >
-            <div className="container-page py-3 flex flex-col gap-1">
-              {navLinks.map((link) => (
+                {link.label}
+              </a>
+            ))}
+            {isAuthenticated && (
+              <>
                 <a
-                  key={link.href}
-                  href={link.href}
-                  target={link.external ? '_blank' : undefined}
-                  rel={link.external ? 'noopener noreferrer' : undefined}
+                  href="https://n8n.academix.tn"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   onClick={() => setMobileOpen(false)}
                   className="rounded-lg px-4 py-3 text-sm font-medium text-white/90 hover:bg-white/10"
                 >
-                  {link.label}
+                  {t.nav.n8n}
                 </a>
-              ))}
-              {isAuthenticated && (
-                <>
-                  <a
-                    href="https://n8n.academix.tn"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => setMobileOpen(false)}
-                    className="rounded-lg px-4 py-3 text-sm font-medium text-white/90 hover:bg-white/10"
-                  >
-                    {t.nav.n8n}
-                  </a>
-                  <button
-                    type="button"
-                    onClick={handleLogout}
-                    className="text-left rounded-lg px-4 py-3 text-sm font-medium text-white/90 hover:bg-white/10"
-                  >
-                    {t.nav.logout}
-                  </button>
-                </>
-              )}
-              <div className="px-4 py-3">
-                <LangToggle />
-              </div>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="text-left rounded-lg px-4 py-3 text-sm font-medium text-white/90 hover:bg-white/10"
+                >
+                  {t.nav.logout}
+                </button>
+              </>
+            )}
+            <div className="px-4 py-3">
+              <LangToggle />
             </div>
           </div>
-        </nav>
+        </div>
       </header>
 
       <main className="flex-1">
@@ -273,95 +200,67 @@ function App() {
         )}
       </main>
 
-      <footer className="relative bg-brand-deep text-white/80 border-t border-white/10">
-        {/* Gradient hairline */}
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-brand-navy via-brand-steel to-brand-light" />
-
-        <div className="container-page py-12 md:py-16">
-          <div className="grid gap-10 md:grid-cols-3">
-            {/* Brand col */}
-            <div>
-              <div className="flex items-center gap-3 mb-3">
-                <BrandLogo className="h-10 w-auto object-contain" />
-                <span className="font-bold text-white text-lg">Academix</span>
-              </div>
-              <p className="text-sm text-white/60 leading-relaxed max-w-sm">
-                {t.footer.blurb}
-              </p>
+      {/* ===================== FOOTER ===================== */}
+      <footer className="border-t border-white/[.07]">
+        <div className="container-page grid grid-cols-1 gap-10 pb-10 pt-[54px] md:grid-cols-[1.6fr_1fr_1fr]">
+          <div>
+            <div className="mb-4 flex items-center gap-3">
+              <BrandLogo className="h-9 w-auto object-contain" />
+              <span className="font-serif text-[22px] text-white">Academix</span>
             </div>
-
-            {/* Platforms col */}
-            <div>
-              <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
-                {t.footer.platformsHeading}
-              </h3>
-              <ul className="space-y-2 text-sm">
-                <li>
-                  <a
-                    href="https://pmp.academix.tn"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-white/70 hover:text-brand-steel transition"
-                  >
-                    {t.footer.links.pmp}
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="https://n8n.academix.tn"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-white/70 hover:text-brand-steel transition"
-                  >
-                    {t.footer.links.n8n}
-                  </a>
-                </li>
-                <li>
-                  <a href="#services" className="text-white/70 hover:text-brand-steel transition">
-                    {t.footer.links.allServices}
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            {/* Contact col */}
-            <div>
-              <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
-                {t.footer.getInTouch}
-              </h3>
-              <ul className="space-y-2 text-sm">
-                <li>
-                  <a
-                    href="mailto:contact@academix.tn"
-                    className="inline-flex items-center gap-2 text-white/70 hover:text-brand-steel transition"
-                  >
-                    <Mail className="h-4 w-4" />
-                    contact@academix.tn
-                  </a>
-                </li>
-                <li>
-                  <a href="#contact" className="text-white/70 hover:text-brand-steel transition">
-                    {t.footer.links.contactForm}
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="https://www.linkedin.com/in/jahiz-digital-solutions-922998412"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-white/70 hover:text-brand-steel transition"
-                  >
-                    <LinkedInIcon className="h-4 w-4" />
-                    LinkedIn
-                  </a>
-                </li>
-              </ul>
-            </div>
+            <p className="max-w-[340px] text-[14px] leading-[1.6] text-[#8293af]">{t.footer.blurb}</p>
           </div>
 
-          <div className="mt-10 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/50">
-            <p>© {new Date().getFullYear()} {t.footer.rights}</p>
-            <p className="font-mono">{t.footer.built}</p>
+          <div>
+            <div className="mb-4 font-mono text-[11px] uppercase tracking-[1.5px] text-[#6f7f9b]">
+              {t.footer.platformsHeading}
+            </div>
+            <ul className="flex flex-col gap-2.5 text-[14px]">
+              <li>
+                <a href="https://pmp.academix.tn" target="_blank" rel="noopener noreferrer" className="text-[#bcc8de] no-underline transition-colors hover:text-[#e9b872]">
+                  {t.footer.links.pmp}
+                </a>
+              </li>
+              <li>
+                <a href="https://n8n.academix.tn" target="_blank" rel="noopener noreferrer" className="text-[#bcc8de] no-underline transition-colors hover:text-[#e9b872]">
+                  {t.footer.links.n8n}
+                </a>
+              </li>
+              <li>
+                <a href="#services" className="text-[#bcc8de] no-underline transition-colors hover:text-[#e9b872]">
+                  {t.footer.links.allServices}
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <div className="mb-4 font-mono text-[11px] uppercase tracking-[1.5px] text-[#6f7f9b]">
+              {t.footer.getInTouch}
+            </div>
+            <ul className="flex flex-col gap-2.5 text-[14px]">
+              <li>
+                <a href="mailto:academix@jahiz.tn" className="inline-flex items-center gap-2 text-[#bcc8de] no-underline transition-colors hover:text-[#e9b872]">
+                  <Mail className="h-4 w-4" /> academix@jahiz.tn
+                </a>
+              </li>
+              <li>
+                <a href="#contact" className="text-[#bcc8de] no-underline transition-colors hover:text-[#e9b872]">
+                  {t.footer.links.contactForm}
+                </a>
+              </li>
+              <li>
+                <a href="https://www.linkedin.com/in/jahiz-digital-solutions-922998412" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-[#bcc8de] no-underline transition-colors hover:text-[#e9b872]">
+                  <LinkedInIcon className="h-4 w-4" /> LinkedIn
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div className="border-t border-white/[.06]">
+          <div className="container-page flex flex-wrap justify-between gap-2.5 py-5 text-[12.5px] text-[#6f7f9b]">
+            <span>© {new Date().getFullYear()} {t.footer.rights}</span>
+            <span className="font-mono">{t.footer.built}</span>
           </div>
         </div>
       </footer>

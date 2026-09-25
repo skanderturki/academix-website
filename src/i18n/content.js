@@ -38,6 +38,13 @@ export const content = {
       ctaPrimary: 'Explore Our Solutions',
       ctaSecondary: 'Talk to Our Team',
       trust: ['ABET-aligned', 'NCAAA-aligned', 'Tunisia-based, university-trusted'],
+      mapTitle: 'Outcome mapping',
+      mapLive: 'live evidence',
+      stats: [
+        { n: 'CLO', l: 'outcome assessment' },
+        { n: 'PLO', l: 'programme mapping' },
+        { n: '100%', l: 'auditable evidence' },
+      ],
     },
     about: {
       eyebrow: 'Who We Are',
@@ -203,6 +210,13 @@ export const content = {
       ctaPrimary: 'Découvrir nos solutions',
       ctaSecondary: 'Parler à notre équipe',
       trust: ['Conforme ABET', 'Conforme NCAAA', 'Basés en Tunisie, adoptés par les universités'],
+      mapTitle: 'Cartographie des acquis',
+      mapLive: 'preuves en direct',
+      stats: [
+        { n: 'CLO', l: 'évaluation des acquis' },
+        { n: 'PLO', l: 'cartographie programme' },
+        { n: '100%', l: 'preuves auditables' },
+      ],
     },
     about: {
       eyebrow: 'Qui sommes-nous',

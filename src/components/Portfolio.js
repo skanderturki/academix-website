@@ -170,13 +170,13 @@ function WorkflowCard({ workflow, onClick }) {
     <button
       type="button"
       onClick={onClick}
-      className="group text-left h-full rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-xl p-6 transition hover:border-brand-steel/40 hover:bg-white/[0.06] hover:-translate-y-1"
+      className="group text-left h-full rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-xl p-6 transition hover:border-gold/40 hover:bg-white/[0.06] hover:-translate-y-1"
     >
       <div className="flex items-start gap-4 mb-4">
         <div className="flex-shrink-0 text-4xl">{workflow.icon}</div>
         <div className="flex-1 min-w-0">
           <div className="flex flex-wrap gap-2 mb-2">
-            <Badge className="border-brand-navy/40 bg-brand-navy/15 text-brand-steel">
+            <Badge className="border-brand-navy/40 bg-brand-navy/15 text-gold">
               {workflow.category}
             </Badge>
             <Badge>{workflow.complexity}</Badge>
@@ -200,7 +200,7 @@ function WorkflowCard({ workflow, onClick }) {
           ))}
         </div>
       </div>
-      <div className="flex items-center gap-2 text-sm font-medium text-brand-steel group-hover:text-brand-glow">
+      <div className="flex items-center gap-2 text-sm font-medium text-gold group-hover:text-gold-light">
         View details
         <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
       </div>
@@ -249,7 +249,7 @@ function WorkflowModal({ workflow, onClose }) {
             <div className="min-w-0">
               <h2 className="text-xl font-semibold text-white mb-2">{workflow.title}</h2>
               <div className="flex flex-wrap gap-2">
-                <Badge className="border-brand-navy/40 bg-brand-navy/15 text-brand-steel">
+                <Badge className="border-brand-navy/40 bg-brand-navy/15 text-gold">
                   {workflow.category}
                 </Badge>
                 <Badge>{workflow.complexity} Complexity</Badge>
@@ -277,7 +277,7 @@ function WorkflowModal({ workflow, onClose }) {
                 className={cn(
                   'px-4 py-3 text-sm font-medium transition border-b-2',
                   tab === t.id
-                    ? 'text-white border-brand-steel'
+                    ? 'text-white border-gold'
                     : 'text-white/60 border-transparent hover:text-white/90'
                 )}
               >
@@ -317,7 +317,7 @@ function WorkflowModal({ workflow, onClose }) {
                 <div className="flex flex-wrap items-center gap-2">
                   {workflow.nodes.map((node, idx) => (
                     <div key={node} className="flex items-center gap-2">
-                      <span className="inline-flex items-center rounded-lg border border-brand-steel/30 bg-brand-steel/10 px-3 py-1.5 text-xs font-medium text-brand-steel">
+                      <span className="inline-flex items-center rounded-lg border border-gold/30 bg-gold/10 px-3 py-1.5 text-xs font-medium text-gold">
                         {node}
                       </span>
                       {idx < workflow.nodes.length - 1 && (
@@ -359,12 +359,12 @@ function WorkflowModal({ workflow, onClose }) {
                   <li>Test and activate the workflow</li>
                 </ol>
               </div>
-              <div className="rounded-lg border border-brand-steel/30 bg-brand-steel/10 p-4">
+              <div className="rounded-lg border border-gold/30 bg-gold/10 p-4">
                 <p className="text-sm text-white/80">
-                  <strong className="text-brand-steel">Need Help?</strong> Our team can help you implement this workflow or customize it for your specific needs.{' '}
+                  <strong className="text-gold">Need Help?</strong> Our team can help you implement this workflow or customize it for your specific needs.{' '}
                   <a
                     href="#contact"
-                    className="text-brand-steel hover:text-brand-glow underline"
+                    className="text-gold hover:text-gold-light underline"
                     onClick={onClose}
                   >
                     Contact us
@@ -406,7 +406,7 @@ function Portfolio() {
       <div className="container-page relative py-16 md:py-20">
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-medium text-brand-steel uppercase tracking-widest mb-6">
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-medium text-gold uppercase tracking-widest mb-6">
             Portfolio
           </div>
           <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-white mb-4">

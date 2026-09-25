@@ -55,6 +55,19 @@ module.exports = {
           light: '#a8c8e0',  // soft tint for backgrounds
           glow: '#6ba4cf',   // hover/focus glow
         },
+        // 2026 rebrand palette — deep navy + gold accent (matches the redesign).
+        navy: {
+          950: '#060e1c',
+          900: '#0a1628',
+          800: '#0f1f38',
+          700: '#13243f',
+        },
+        gold: {
+          DEFAULT: '#e9b872',
+          light: '#f3c685',
+          deep: '#b9853f',
+        },
+        steel: '#7fa8d9',
       },
       borderRadius: {
         lg: 'var(--radius)',
@@ -62,10 +75,11 @@ module.exports = {
         sm: 'calc(var(--radius) - 4px)',
       },
       fontFamily: {
+        serif: ['"Instrument Serif"', 'Georgia', 'serif'],
         sans: [
-          'Inter',
+          '"Hanken Grotesk"',
+          'system-ui',
           '-apple-system',
-          'BlinkMacSystemFont',
           'Segoe UI',
           'Roboto',
           'Helvetica Neue',
@@ -73,7 +87,7 @@ module.exports = {
           'sans-serif',
         ],
         mono: [
-          'Roboto Mono',
+          '"IBM Plex Mono"',
           'ui-monospace',
           'SFMono-Regular',
           'Menlo',

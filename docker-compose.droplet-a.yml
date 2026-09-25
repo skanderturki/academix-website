@@ -78,7 +78,7 @@ services:
       PORT: "3000"
       RESEND_API_KEY: ${MAIN_RESEND_API_KEY:-}
       RESEND_FROM: ${MAIN_RESEND_FROM:-Academix <academix@jahiz.tn>}
-      CONTACT_TO_EMAIL: ${MAIN_CONTACT_TO_EMAIL:-contact@academix.tn}
+      CONTACT_TO_EMAIL: ${MAIN_CONTACT_TO_EMAIL:-academix@jahiz.tn}
       SITE_USERNAME: ${MAIN_SITE_USERNAME:-preview}
       SITE_PASSWORD: ${MAIN_SITE_PASSWORD:-}
       # First-party analytics (embedded SQLite on the volume below).

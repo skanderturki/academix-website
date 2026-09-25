@@ -8,7 +8,7 @@ import { Alert, AlertDescription } from './ui/alert';
 import { useLanguage } from '../contexts/LanguageContext';
 import { cn } from '../lib/utils';
 
-const CONTACT_EMAIL = 'contact@academix.tn';
+const CONTACT_EMAIL = 'academix@jahiz.tn';
 
 function ContactForm() {
   const { t } = useLanguage();
@@ -86,7 +86,7 @@ function ContactForm() {
     <div className="relative">
       {/* Glow aura behind the card */}
       <div
-        className="absolute -inset-2 rounded-[28px] bg-gradient-to-r from-brand-navy/30 via-brand-steel/20 to-brand-light/30 blur-2xl opacity-70"
+        className="absolute -inset-2 rounded-[28px] bg-gradient-to-r from-[#e9b872]/20 via-[#7fa8d9]/12 to-transparent blur-2xl opacity-70"
         aria-hidden="true"
       />
 
@@ -97,7 +97,7 @@ function ContactForm() {
             {f.directIntro}{' '}
             <a
               href={`mailto:${CONTACT_EMAIL}`}
-              className="inline-flex items-center gap-1 text-brand-steel hover:text-brand-glow transition"
+              className="inline-flex items-center gap-1 text-[#e9b872] hover:text-[#f3c685] transition"
             >
               <Mail className="h-3.5 w-3.5" />
               {CONTACT_EMAIL}
