@@ -216,7 +216,7 @@ function App() {
                 </a>
               </li>
               <li>
-                <a href="https://www.linkedin.com/in/jahiz-digital-solutions-922998412" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-[#bcc8de] no-underline transition-colors hover:text-[#e9b872]">
+                <a href="https://www.linkedin.com/company/jahizds/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-[#bcc8de] no-underline transition-colors hover:text-[#e9b872]">
                   <LinkedInIcon className="h-4 w-4" /> LinkedIn
                 </a>
               </li>
