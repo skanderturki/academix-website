@@ -109,18 +109,26 @@ npm run serve      # node server.js (serves build/ + /api/contact)
 `npm run build` runs `react-scripts build` then `node scripts/pages/build.mjs`,
 which writes plain-HTML pages (readable without JavaScript) into `build/`:
 
-- `/what-is-abet-accreditation` (the ABET guide: what it is, commissions,
-  programs covered, criteria, eligibility, timeline), `/abet-self-study-report`,
+- ABET guides (`guide: true`; each ends with links to the others):
+  `/what-is-abet-accreditation` (what it is, commissions, programs covered,
+  criteria, eligibility), `/abet-student-outcomes`, `/abet-performance-indicators`,
+  `/abet-criterion-4-continuous-improvement`, `/abet-accreditation-timeline`,
+  `/abet-accreditation-cost` (ABET's fee schedule for programs outside the U.S.:
+  update it each cycle, ABET posts it by April 1), `/choosing-abet-accreditation-software`.
+- Product pages: `/abet-self-study-report`,
   `/student-outcomes-assessment`, `/abet-readiness`, `/program-criteria` and
   `/program-criteria/{eac,etac,cac}`, `/pricing`, `/faq` (FAQPage schema), each
   also under `/fr/...`; `/fr` is the French home (`LanguageContext` reads the
   path).
-- `sitemap.xml` (with hreflang alternates), `llms.txt`, `404.html`,
+- `sitemap.xml` (with hreflang alternates), `llms.txt`, `llms-full.txt` (the
+  English guides and FAQ in full, as Markdown), `404.html`,
   `pages-manifest.json` (the routes `server.js` serves).
+- After a deploy, `npm run indexnow` tells Bing and the other IndexNow engines
+  that the sitemap's URLs changed (key file `public/<key>.txt`, public by design).
 
 Copy lives in `scripts/pages/content/en.mjs` and `fr.mjs` (keep them in step;
 `tests/pages.test.mjs` checks structure, title ≤ 70 and description 90–165
-characters); the shell is `scripts/pages/layout.mjs`. ABET facts come from the
+characters, that every internal link resolves, and the cost page's arithmetic); the shell is `scripts/pages/layout.mjs`. ABET facts come from the
 2026–27 APPM and criteria PDFs (see the abet_quality repo); the program-criteria
 lists in `scripts/pages/data/program-criteria.json` are exported from
 abet_quality's registry: re-export when ABET publishes a new cycle. Tailwind

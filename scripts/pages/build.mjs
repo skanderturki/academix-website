@@ -4,6 +4,7 @@
 //   fr-index.html              the home page for /fr (French meta + summary)
 //   404.html                   the not-found page (served with status 404)
 //   sitemap.xml, llms.txt      for search engines and AI crawlers
+//   llms-full.txt              the English guides in full, as Markdown, for AI crawlers
 //   pages-manifest.json        route -> file, read by server.js
 // and adds hreflang links to build/index.html.
 //
@@ -22,7 +23,7 @@ import * as FR from './content/fr.mjs';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const BUILD = path.resolve(HERE, '../../build');
 const UPDATED = '2026-09-26';
-const FAQ_ABET_COUNT = 9; // the first nine FAQ items are about ABET, the rest about Academix
+const FAQ_ABET_COUNT = 12; // the first twelve FAQ items are about ABET, the rest about Academix
 
 const manifest = JSON.parse(fs.readFileSync(path.join(BUILD, 'asset-manifest.json'), 'utf8'));
 const css = manifest.files['main.css'].replace(/^\//, '');
@@ -33,7 +34,16 @@ if (EN.faqItems.length !== FR.faqItems.length) throw new Error('FAQ items differ
 for (const k of Object.keys(EN.pages)) if (!FR.pages[k]) throw new Error(`fr is missing page ${k}`);
 
 const society = (p) => (p.societies && p.societies[0] ? p.societies[0].replace(/^(Lead|Co-Lead)\s+Societ(y|ies):\s*/i, '') : p.leadSociety);
-const orgLd = { '@type': 'Organization', name: 'Academix', url: SITE, logo: `${SITE}/logo-192.png`, parentOrganization: { '@type': 'Organization', name: 'Jahiz Digital Solutions', url: 'https://jahiz.tn' } };
+const orgLd = { '@type': 'Organization', name: 'Academix', alternateName: 'Academix ABET', url: SITE, logo: `${SITE}/logo-192.png`, parentOrganization: { '@type': 'Organization', name: 'Jahiz Digital Solutions', url: 'https://jahiz.tn' } };
+const GUIDES = Object.keys(EN.pages).filter((k) => EN.pages[k].guide);
+const NL = '\n';
+
+// A closing list of the other ABET guides, so each guide links to the rest.
+function moreGuides(lang, slug) {
+  const C = LANGS[lang];
+  const items = GUIDES.filter((k) => k !== slug).map((k) => `<a href="${url(lang, k)}">${C.pages[k].h1}</a>`);
+  return [{ h2: C.ui.moreGuides, id: 'more-guides' }, { ul: items }];
+}
 
 function commissionTable(lang, commission, limit) {
   const C = LANGS[lang];
@@ -85,6 +95,7 @@ for (const slug of Object.keys(EN.pages)) {
       crumbs.push([C.ui.programCriteria, url(lang, 'program-criteria')], [c, url(lang, slug)]);
     } else {
       blocks = fillPlaceholders(lang, def.blocks);
+      if (def.guide) blocks = [...blocks, ...moreGuides(lang, slug)];
       crumbs.push([textOf(def.eyebrow || def.h1), url(lang, slug)]);
     }
     const body = localize(lang, renderBlocks(blocks));
@@ -158,9 +169,11 @@ write('llms.txt', `# Academix
 
 Academix is independent software and is not affiliated with or endorsed by ABET. Facts about ABET on this site come from ABET's 2026–27 Accreditation Policy and Procedure Manual, the commissions' criteria and abet.org.
 
-## ABET accreditation guide
-- [What is ABET accreditation?](${SITE}/what-is-abet-accreditation): ${P['what-is-abet-accreditation'].description}
+## ABET accreditation guides
+${GUIDES.map((k) => `- [${textOf(P[k].h1)}](${SITE}/${k}): ${P[k].description}`).join(NL)}
 - [Frequently asked questions](${SITE}/faq): ${P.faq.description}
+
+The full text of these guides, in one file: ${SITE}/llms-full.txt
 
 ## Product
 - [ABET Self-Study Report](${SITE}/abet-self-study-report): ${P['abet-self-study-report'].description}
@@ -172,6 +185,45 @@ Academix is independent software and is not affiliated with or endorsed by ABET.
 ## Contact
 - Book an online demo or ask a question: ${SITE}/#contact, contact@jahiz.tn
 - French version: ${SITE}/fr
+`);
+
+// ---- llms-full.txt: the English guides and FAQ in full, as Markdown ------------------
+// Inline HTML becomes Markdown: links keep their (absolute) target, bold stays bold,
+// every other tag is dropped.
+const md = (html) => String(html)
+  .replace(/<a href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/g, (m, h, t) => `[${t}](${h.startsWith('/') ? SITE + h : h})`)
+  .replace(/<\/?strong>/g, '**').replace(/<\/?em>/g, '_')
+  .replace(/<[^>]+>/g, '')
+  .replace(/&amp;/g, '&');
+const mdCell = (c) => md(c).replace(/\|/g, '\\|');
+function blocksToMd(blocks) {
+  return blocks.map((b) => {
+    if (b.h2) return `## ${md(b.h2)}`;
+    if (b.h3) return `### ${md(b.h3)}`;
+    if (b.p) return md(b.p);
+    if (b.note) return `> ${md(b.note)}`;
+    if (b.ul) return b.ul.map((x) => `- ${md(x)}`).join(NL);
+    if (b.ol) return b.ol.map((x, i) => `${i + 1}. ${md(x)}`).join(NL);
+    if (b.steps) return b.steps.map(([t, d], i) => `${i + 1}. **${md(t)}**: ${md(d)}`).join(NL);
+    if (b.faq) return b.faq.map(([q, a]) => `### ${md(q)}${NL}${NL}${md(a)}`).join(NL + NL);
+    if (b.table) {
+      const { head, rows, caption } = b.table;
+      return [`_${md(caption)}_`, '', `| ${head.map(mdCell).join(' | ')} |`, `| ${head.map(() => '---').join(' | ')} |`, ...rows.map((r) => `| ${r.map(mdCell).join(' | ')} |`)].join(NL);
+    }
+    return '';
+  }).filter(Boolean).join(NL + NL);
+}
+const fullSections = [...GUIDES, 'faq'].map((k) => {
+  const d = EN.pages[k];
+  return `# ${textOf(d.h1)}${NL}${NL}Source: ${abs('en', k)}${NL}${NL}${md(d.lede)}${NL}${NL}${blocksToMd(fillPlaceholders('en', d.blocks))}`;
+});
+write('llms-full.txt', `# Academix: ABET accreditation guides, in full
+
+> ${md(P['what-is-abet-accreditation'].lede)}
+
+Written by Academix (ABET accreditation software by Jahiz Digital Solutions, ${SITE}). Academix is not affiliated with or endorsed by ABET; ABET's own documents are authoritative. Last reviewed ${UPDATED}.
+
+${fullSections.join(`${NL}${NL}---${NL}${NL}`)}
 `);
 
 fs.writeFileSync(path.join(BUILD, 'pages-manifest.json'), JSON.stringify(routes, null, 1));

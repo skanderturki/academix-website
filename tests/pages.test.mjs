@@ -34,3 +34,21 @@ test('the ABET facts stay the sourced ones', () => {
   assert.match(guide, /July 1/);
   assert.doesNotMatch(textOf(EN.faqItems.flat().join(' ')), /NCAAA-aligned|aligned with NCAAA/);
 });
+
+test('every internal link in the content points to a page that exists', () => {
+  const known = new Set(['', ...Object.keys(EN.pages)]);
+  const strings = [];
+  const walk = (v) => (typeof v === 'string' ? strings.push(v) : v && typeof v === 'object' && Object.values(v).forEach(walk));
+  walk([EN.pages, EN.faqItems, FR.pages, FR.faqItems]);
+  const bad = [...strings.join(' ').matchAll(/href="\/([^"#]*)/g)].map((m) => m[1]).filter((p) => !known.has(p));
+  assert.deepEqual([...new Set(bad)], []);
+});
+
+test('the ABET cost examples add up', () => {
+  const [readiness, chair, evaluator, base, perProgram] = [1185, 8975, 8975, 1685, 1685];
+  const text = textOf(JSON.stringify(EN.pages['abet-accreditation-cost']));
+  const money = (n) => `$${n.toLocaleString('en-US')}`;
+  for (const n of [readiness + chair + evaluator, 2 * readiness + chair + 2 * evaluator, base + perProgram, base + 2 * perProgram]) {
+    assert.ok(text.includes(money(n)), `missing ${money(n)}`);
+  }
+});
