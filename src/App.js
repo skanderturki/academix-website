@@ -82,7 +82,7 @@ function App() {
           {/* Brand */}
           <a href="#home" className="flex items-center gap-3 no-underline">
             <BrandLogo className="h-9 w-auto" />
-            <span aria-hidden="true" className="font-serif text-[24px] tracking-[.3px] text-white">Academix</span>
+            <span aria-hidden="true" className="font-wordmark text-[24px] font-semibold tracking-[-0.014em] text-white">Academix</span>
           </a>
 
           {/* Center links (desktop) */}
@@ -169,7 +169,7 @@ function App() {
           <div>
             <div className="mb-4 flex items-center gap-3">
               <BrandLogo className="h-9 w-auto" />
-              <span aria-hidden="true" className="font-serif text-[22px] text-white">Academix</span>
+              <span aria-hidden="true" className="font-wordmark text-[22px] font-semibold tracking-[-0.014em] text-white">Academix</span>
             </div>
             <p className="max-w-[340px] text-[14px] leading-[1.6] text-[#8293af]">{t.footer.blurb}</p>
           </div>

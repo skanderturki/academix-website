@@ -76,6 +76,8 @@ module.exports = {
       },
       fontFamily: {
         serif: ['"Instrument Serif"', 'Georgia', 'serif'],
+        // The Academix wordmark only (brand kit: Fraunces 600, -0.5 letter-spacing at 36px).
+        wordmark: ['Fraunces', 'Georgia', 'serif'],
         sans: [
           '"Hanken Grotesk"',
           'system-ui',

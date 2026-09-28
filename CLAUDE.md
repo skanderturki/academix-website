@@ -26,7 +26,9 @@ Create React App boilerplate and can be ignored.) See the workspace-root
   lucide-react, Radix UI primitives. The 2026 redesign: deep navy + gold
   (`#060e1c` ground, `#e9b872` accent; `navy`/`gold`/`steel` in
   `tailwind.config.js`), Instrument Serif for display, Hanken Grotesk for text,
-  IBM Plex Mono for eyebrows and data. Bilingual EN/FR: every public string lives
+  IBM Plex Mono for eyebrows and data. The "Academix" wordmark beside the shield
+  is Fraunces 600 (`font-wordmark`), as in the brand kit and the platform; only
+  its eight letters are loaded (`&text=Academix`). Bilingual EN/FR: every public string lives
   in `src/i18n/content.js`, read through `useLanguage()`.
 - **Backend**: `server.js` — Express serving the CRA `build/` with a `/api/contact`
   endpoint (Resend email), `/api/quote` (see "License quotes" below), `express-rate-limit`, an optional HTTP Basic-Auth

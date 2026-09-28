@@ -120,6 +120,7 @@ ${otherLangExists ? `<link rel="alternate" hreflang="${lang}" href="${canonical}
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&text=Academix&display=swap" rel="stylesheet" />
 <link href="/${css}" rel="stylesheet" />
 ${ld.map((x) => `<script type="application/ld+json">${JSON.stringify(x)}</script>`).join('\n')}
 </head>
@@ -127,7 +128,7 @@ ${ld.map((x) => `<script type="application/ld+json">${JSON.stringify(x)}</script
 <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-[#e9b872] focus:px-4 focus:py-2 focus:text-[#0a1628]">${lang === 'fr' ? 'Aller au contenu' : 'Skip to content'}</a>
 <header class="sticky top-0 z-50 border-b border-white/[.07] bg-[#060e1c]/85 backdrop-blur-xl">
   <div class="container-page flex h-[74px] items-center justify-between gap-6">
-    <a href="${url(lang, '')}" class="flex items-center gap-3 no-underline"><img src="/brand/academix-shield-reversed.svg" alt="Academix" width="88" height="100" class="h-9 w-auto" /><span aria-hidden="true" class="font-serif text-[24px] tracking-[.3px] text-white">Academix</span></a>
+    <a href="${url(lang, '')}" class="flex items-center gap-3 no-underline"><img src="/brand/academix-shield-reversed.svg" alt="Academix" width="88" height="100" class="h-9 w-auto" /><span aria-hidden="true" class="font-wordmark text-[24px] font-semibold tracking-[-0.014em] text-white">Academix</span></a>
     <nav class="hidden items-center gap-7 lg:flex" aria-label="${lang === 'fr' ? 'Principale' : 'Main'}">${t.nav.map(([h, l]) => navLink(h, l)).join('')}</nav>
     <div class="flex items-center gap-3">
       <a href="${url(other, slug)}" hreflang="${other}" lang="${other}" aria-label="${t.switchLabel}" class="hidden rounded-[9px] border border-white/15 bg-white/[.04] px-3 py-1.5 text-sm font-medium text-[#aebbd2] no-underline transition hover:border-[#e9b872]/50 hover:text-white sm:inline-block">${t.switchTo}</a>
@@ -165,7 +166,7 @@ ${ld.map((x) => `<script type="application/ld+json">${JSON.stringify(x)}</script
 </main>
 <footer class="border-t border-white/[.07]">
   <div class="container-page grid grid-cols-1 gap-10 pb-10 pt-[54px] md:grid-cols-[1.6fr_1fr_1fr_1fr]">
-    <div><div class="mb-4 flex items-center gap-3"><img src="/brand/academix-shield-reversed.svg" alt="Academix" width="88" height="100" class="h-9 w-auto" /><span aria-hidden="true" class="font-serif text-[22px] text-white">Academix</span></div><p class="max-w-[340px] text-[14px] leading-[1.6] text-[#8293af]">${t.footerBlurb}</p></div>
+    <div><div class="mb-4 flex items-center gap-3"><img src="/brand/academix-shield-reversed.svg" alt="Academix" width="88" height="100" class="h-9 w-auto" /><span aria-hidden="true" class="font-wordmark text-[22px] font-semibold tracking-[-0.014em] text-white">Academix</span></div><p class="max-w-[340px] text-[14px] leading-[1.6] text-[#8293af]">${t.footerBlurb}</p></div>
     <div><div class="mb-4 font-mono text-[11px] uppercase tracking-[1.5px] text-[#6f7f9b]">${t.product}</div><ul class="flex flex-col gap-2.5 text-[14px]">${t.productLinks.map(([h, l]) => `<li><a href="${h}" class="text-[#bcc8de] no-underline hover:text-[#e9b872]">${l}</a></li>`).join('')}</ul></div>
     <div><div class="mb-4 font-mono text-[11px] uppercase tracking-[1.5px] text-[#6f7f9b]">${t.resources}</div><ul class="flex flex-col gap-2.5 text-[14px]">${t.resourceLinks.map(([h, l]) => `<li><a href="${h}" class="text-[#bcc8de] no-underline hover:text-[#e9b872]">${l}</a></li>`).join('')}</ul></div>
     <div><div class="mb-4 font-mono text-[11px] uppercase tracking-[1.5px] text-[#6f7f9b]">${t.contact}</div><ul class="flex flex-col gap-2.5 text-[14px]"><li><a href="mailto:contact@jahiz.tn" class="text-[#bcc8de] no-underline hover:text-[#e9b872]">contact@jahiz.tn</a></li><li><a href="https://www.linkedin.com/company/jahizds/" rel="noopener" class="text-[#bcc8de] no-underline hover:text-[#e9b872]">LinkedIn</a></li></ul></div>
